@@ -1,12 +1,19 @@
 package com.example.demo.dto;
 
 import com.example.demo.enums.Position;
-import jakarta.persistence.Column;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 
-public class userDTO {
-    private int userId;
+public class UserDTO {
+    private Long userId;
     private String userName;
     private String lastName;
     private String email;
@@ -15,4 +22,5 @@ public class userDTO {
     private Position position;
     private String location;
     private Date createdOn;
+
 }

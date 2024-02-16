@@ -13,12 +13,13 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
+@Builder
 @Table(name = "user")
 
 public class User {
     @Id
     @Column(name = "user_id")
-    private int userId;
+    private Long userId;
     private String userName;
     @Column(name = "last_name")
     private String lastName;
@@ -29,8 +30,8 @@ public class User {
     private String location;
     private Date createdOn;
 
-    @OneToMany(mappedBy = "event")
-    private List<Event> event;
+    @OneToMany(mappedBy = "user")
+    private List<Event> events;
 
 
 }
