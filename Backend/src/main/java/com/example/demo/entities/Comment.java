@@ -9,6 +9,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
@@ -16,6 +17,7 @@ import java.util.List;
 public class Comment {
     @Id
     @Column(name="comment_id")
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long commentId;
     @Column(name="comment_text")
     private String commentText;
@@ -24,6 +26,7 @@ public class Comment {
 
     @ManyToOne()
     //muchos comentarios pueden esta asociados a un solo event
+    @JoinColumn(name = "event_id",nullable = false)
     private Event event;
 
 }

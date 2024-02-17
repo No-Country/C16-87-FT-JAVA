@@ -4,6 +4,7 @@ import com.example.demo.enums.Position;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -14,24 +15,26 @@ import java.util.List;
 @NoArgsConstructor
 @ToString
 @Builder
-@Table(name = "user")
-
+@Table(name = "users") //"user" es una palabra reservada en posgres SQL
 public class User {
     @Id
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long userId;
+    @Column(name = "user_name")
     private String userName;
     @Column(name = "last_name")
     private String lastName;
     private String email;
     private int age;
     private String description;
+    @Enumerated(EnumType.STRING)
     private Position position;
     private String location;
     private Date createdOn;
 
-    @OneToMany(mappedBy = "user")
-    private List<Event> events;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL , fetch = FetchType.LAZY)
+    private List<Event> events = new ArrayList<>();
 
 
 }
