@@ -14,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-@Table(name = "event")
+@Table(name = "events")
 
 public final class Event {
     @Id
@@ -37,6 +37,7 @@ public final class Event {
     @ManyToOne
     @JoinColumn(name="user_id", nullable = false)
     private User user;
-    @OneToMany
-    private List<Comment> comments=new ArrayList<>();
+
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Comment> comments = new ArrayList<>();
 }

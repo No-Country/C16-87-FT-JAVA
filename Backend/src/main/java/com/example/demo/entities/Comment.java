@@ -13,8 +13,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-@Table(name = "comment")
-public class Comment {
+@Table(name = "comments")
+public final class Comment {
     @Id
     @Column(name="comment_id")
     @GeneratedValue (strategy = GenerationType.IDENTITY)
@@ -24,9 +24,8 @@ public class Comment {
     @Column(name="comment_date")
     private Date commentDate;
 
-    @ManyToOne()
-    //muchos comentarios pueden esta asociados a un solo event
-    @JoinColumn(name = "event_id",nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "event_id")
     private Event event;
 
 }

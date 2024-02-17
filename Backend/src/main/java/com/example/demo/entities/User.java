@@ -16,7 +16,7 @@ import java.util.List;
 @ToString
 @Builder
 @Table(name = "users") //"user" es una palabra reservada en posgres SQL
-public class User {
+public final class User {
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
