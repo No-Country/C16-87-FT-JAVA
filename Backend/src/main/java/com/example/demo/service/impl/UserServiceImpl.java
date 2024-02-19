@@ -6,32 +6,33 @@ import com.example.demo.service.IUserService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements IUserService {
-    private IUserDAO iUserDAO;
+    private final IUserDAO userDAO;
 
     public UserServiceImpl(IUserDAO iUserDAO) {
-        this.iUserDAO = iUserDAO;
+        this.userDAO = iUserDAO;
     }
 
     @Override
     public List<User> findAll() {
-        return iUserDAO.findAll();
+        return userDAO.findAll();
     }
 
     @Override
-    public User findById(Long id) {
-        return iUserDAO.findById(id);
+    public Optional<User> findById(Long id) {
+        return userDAO.findById(id);
     }
 
     @Override
     public void save(User user) {
-        iUserDAO.save(user);
+        userDAO.save(user);
     }
 
     @Override
     public void deleteById(Long id) {
-        iUserDAO.deleteById(id);
+        userDAO.deleteById(id);
     }
 }

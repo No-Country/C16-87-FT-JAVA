@@ -5,6 +5,8 @@ import com.example.demo.repository.UserRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
+
 @Component
 public class UserDAOImp implements IUserDAO {
     private final  UserRepository userRepository;
@@ -16,9 +18,9 @@ public class UserDAOImp implements IUserDAO {
         return (List<User>) userRepository.findAll();
     }
 
-    @Override
-    public User findById(Long id) {
-        return userRepository.findById(id).get();
+
+    public Optional<User> findById(Long id) {
+        return userRepository.findById(id);
     }
 
     @Override

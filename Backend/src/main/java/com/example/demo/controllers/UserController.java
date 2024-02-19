@@ -12,7 +12,7 @@ import java.net.URISyntaxException;
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
-    private IUserService userService;
+    private final IUserService userService;
 
     public UserController(IUserService userService) {
         this.userService = userService;
