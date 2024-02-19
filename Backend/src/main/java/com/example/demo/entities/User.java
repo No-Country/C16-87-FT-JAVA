@@ -25,14 +25,17 @@ public final class User {
     private String userName;
     @Column(name = "last_name")
     private String lastName;
-    @Column(name = "email")
     private String email;
+    private String password;
     private int age;
     private String description;
     @Enumerated(EnumType.STRING)
     private Position position;
     private String location;
+    @Column(name = "created_on")
     private Date createdOn;
+    @Column(name = "is_active")
+    private boolean isActive;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL , fetch = FetchType.LAZY)
     private List<Event> events = new ArrayList<>();
