@@ -24,7 +24,18 @@ public class UserController {
         if (userDTO.getUserName().isBlank()) {
             return ResponseEntity.badRequest().build();
         }
-        userService.save(User.builder().userName(userDTO.getUserName()).build());
+        User user = User.builder()
+                .userName(userDTO.getUserName())
+                .lastName(userDTO.getLastName())
+                .email(userDTO.getEmail())
+//                .age(userDTO.getAge())
+//                .description(userDTO.getDescription())
+//                .position(userDTO.getPosition())
+//                .location(userDTO.getLocation())
+//                .createdOn(userDTO.getCreatedOn())
+                .build();
+        userService.save(user);
+
         return ResponseEntity.created(new URI("/api/user/save")).build();
     }
 

@@ -25,6 +25,7 @@ public final class User {
     private String userName;
     @Column(name = "last_name")
     private String lastName;
+    @Column(name = "email")
     private String email;
     private int age;
     private String description;

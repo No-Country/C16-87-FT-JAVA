@@ -17,10 +17,10 @@ public class UserDTO {
     private String userName;
     private String lastName;
     private String email;
-    private int age;
-    private String description;
-    private Position position;
-    private String location;
-    private Date createdOn;
+//    private int age;
+//    private String description;
+//    private Position position;
+//    private String location;
+//    private Date createdOn;
 
 }
