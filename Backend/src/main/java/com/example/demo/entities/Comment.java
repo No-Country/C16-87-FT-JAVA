@@ -28,4 +28,9 @@ public final class Comment {
     @JoinColumn(name = "event_id", nullable = false)
     private Event event;
 
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
 }
