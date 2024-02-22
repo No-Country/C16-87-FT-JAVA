@@ -15,4 +15,7 @@ public interface CommentRepository extends CrudRepository<Comment,Long> {
     @Query("SELECT c FROM Comment c JOIN c.user u WHERE u.userId = ?1")
     List<Comment> findAllCommentsByUser(Long userId);
 
+
+
+
 }

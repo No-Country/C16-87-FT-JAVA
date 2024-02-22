@@ -23,6 +23,7 @@ public class CommentServiceImpl implements ICommentService {
         return (List<Comment>) iCommentDAO.findAllCommentsByUser(userId);
     }
 
+
     @Override
     public List<Comment> findAllCommentsByEvent(Long eventId)
     {return (List<Comment>) iCommentDAO.findAllCommentsByEvent(eventId);
