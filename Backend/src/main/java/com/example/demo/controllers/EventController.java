@@ -18,8 +18,7 @@ public class EventController {
     private final IEventService eventService;
 
     public EventController(IEventService eventService){
-        this.eventService =
-                eventService;
+        this.eventService = eventService;
     }
     @PostMapping("/save")
     public ResponseEntity<?> createEvent(@RequestBody EventDTO eventDTO) throws URISyntaxException {
@@ -34,6 +33,7 @@ public class EventController {
                     .eventHours(eventDTO.getEventHours())
                     .eventDescription(eventDTO.getEventDescription())
                     .playersQuantity(eventDTO.getPlayersQuantity())
+                    .location(eventDTO.getLocation())
                     .available(true)
                     .user(eventDTO.getUser())
                     .build();
@@ -50,7 +50,7 @@ public class EventController {
             event.setStartEvent(eventDTO.getStartEvent());
             event.setEventDescription(eventDTO.getEventDescription());
             event.setPlayersQuantity(eventDTO.getPlayersQuantity());
-
+            event.setLocation(eventDTO.getLocation());
             eventService.save(event);
 
             return ResponseEntity.ok("Successfully updated");
@@ -81,6 +81,7 @@ public class EventController {
                         .eventHours(event.getEventHours())
                         .eventDescription(event.getEventDescription())
                         .playersQuantity(event.getPlayersQuantity())
+                        .location(event.getLocation())
                         .available(event.isAvailable())
                         .user(event.getUser())
                         .build()

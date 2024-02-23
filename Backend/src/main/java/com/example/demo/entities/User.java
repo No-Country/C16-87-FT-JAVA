@@ -1,6 +1,7 @@
 package com.example.demo.entities;
 
 import com.example.demo.enums.Position;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -38,6 +39,7 @@ public final class User {
     private boolean isActive;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL , fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Event> events = new ArrayList<>();
 
 

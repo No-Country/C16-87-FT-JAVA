@@ -20,6 +20,7 @@ public class EventDTO {
     private int eventHours;
     private String eventDescription;
     private int playersQuantity;
+    private String location;
     private boolean available;
     private User user;
 }
