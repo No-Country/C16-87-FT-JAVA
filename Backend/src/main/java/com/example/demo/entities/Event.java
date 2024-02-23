@@ -33,6 +33,7 @@ public final class Event {
     private String eventDescription;
     @Column(name= "players_quantity")
     private int playersQuantity;
+    private String location;
     private boolean available;
 
     @ManyToOne

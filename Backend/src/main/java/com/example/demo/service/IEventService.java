@@ -1,16 +1,13 @@
-package com.example.demo.persistance;
+package com.example.demo.service;
 
 import com.example.demo.entities.Event;
-import com.example.demo.entities.User;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface IEventDAO {
+public interface IEventService {
     List<Event> findAll();
     Optional<Event> findById(Long eventId);
     void save(Event event);
     void deleteById(Long eventId);
-
-
 }
