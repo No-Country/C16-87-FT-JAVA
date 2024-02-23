@@ -8,6 +8,7 @@ import java.util.Optional;
 public interface ICommentService {
     List<Comment> findAllCommentsByUser(Long userId);
     List<Comment> findAllCommentsByEvent(Long eventId);
+
     Optional<Comment> findById(Long commentId);
     //update?
     void save(Comment comment);

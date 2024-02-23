@@ -3,7 +3,6 @@ package com.example.demo.service.impl;
 import com.example.demo.entities.Comment;
 import com.example.demo.persistance.ICommentDAO;
 import com.example.demo.service.ICommentService;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
