@@ -18,11 +18,11 @@ public class CommentDAOImp implements ICommentDAO {
 
     @Override
     public List<Comment> findAllCommentsByUser(Long userId) {
-        return (List<Comment>) commentRepository.findAll();
+        return (List<Comment>) commentRepository.findAllCommentsByUser(userId);
     }
 
     @Override
-    public List<Comment> findAllCommentsByEvent(Long eventId) {return (List<Comment>) commentRepository.findAll();
+    public List<Comment> findAllCommentsByEvent(Long eventId) {return (List<Comment>) commentRepository.findAllCommentsByEvent(eventId);
     }
 
     @Override

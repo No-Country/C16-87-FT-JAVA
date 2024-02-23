@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Date;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/comment")
@@ -23,7 +24,7 @@ public class CommentController{
     }
 
     @PostMapping("/save")
-        public ResponseEntity<?> saveCommnent(@RequestBody CommentDTO commentDTO) throws URISyntaxException {
+        public ResponseEntity<?> saveComment(@RequestBody CommentDTO commentDTO) throws URISyntaxException {
         Date currentDate = new Date();
         if (commentDTO.getCommentText().isBlank()) {
             return ResponseEntity.badRequest().build();
@@ -41,36 +42,22 @@ public class CommentController{
         return ResponseEntity.created(new URI("/api/comment/save")).build();
     }
 
-    /*
-
-        @Override
-    public List<Comment> findAllCommentsByUser(Long userId) {
-        return (List<Comment>) iCommentDAO.findAllCommentsByUser(userId);
-    }
-     */
-
     @GetMapping("/commentsByUser/{userId}")
     public ResponseEntity<?> commentsByUser(@PathVariable Long userId) throws URISyntaxException {
-        // List<Comment> allCommentUser;
+
         if (userId == null) {
             return ResponseEntity.badRequest().build();
-
         }
-        //busca los comentarios asociados a ese usuario
         List<CommentDTO> commentListDTO = commentService.findAllCommentsByUser(userId).stream()
                 .map(comment -> CommentDTO.builder()
+                        .commentId(comment.getCommentId())
                         .commentText(comment.getCommentText())
                         .user(comment.getUser())
                         .event(comment.getEvent())
-                        .build()
-                        .toList());
+                        .build()).toList();
+
         return ResponseEntity.ok(commentListDTO);
     }
-
-
-
-
-
 
     }
 
