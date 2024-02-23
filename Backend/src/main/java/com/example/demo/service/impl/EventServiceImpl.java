@@ -38,4 +38,9 @@ public class EventServiceImpl implements IEventService {
     public void deleteById(Long eventId) {
         eventDAO.deleteById(eventId);
     }
+
+    @Override
+    public List<Event> findEventsByLocation(String location) {
+        return eventDAO.findEventsByLocation(location);
+    }
 }

@@ -11,6 +11,5 @@ public interface IEventDAO {
     Optional<Event> findById(Long eventId);
     void save(Event event);
     void deleteById(Long eventId);
-
-
+    List<Event> findEventsByLocation(String location);
 }

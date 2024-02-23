@@ -17,33 +17,35 @@ public class EventController {
 
     private final IEventService eventService;
 
-    public EventController(IEventService eventService){
+    public EventController(IEventService eventService) {
         this.eventService = eventService;
     }
+
     @PostMapping("/save")
     public ResponseEntity<?> createEvent(@RequestBody EventDTO eventDTO) throws URISyntaxException {
 
-        if(eventDTO.getEventName().isBlank()){
+        if (eventDTO.getEventName().isBlank()) {
             return ResponseEntity.badRequest().build();
         }
-            Event event = Event.builder()
-                    .eventName(eventDTO.getEventName())
-                    .price(eventDTO.getPrice())
-                    .startEvent(eventDTO.getStartEvent())
-                    .eventHours(eventDTO.getEventHours())
-                    .eventDescription(eventDTO.getEventDescription())
-                    .playersQuantity(eventDTO.getPlayersQuantity())
-                    .location(eventDTO.getLocation())
-                    .available(true)
-                    .user(eventDTO.getUser())
-                    .build();
-            eventService.save(event);
-            return ResponseEntity.created(new URI("/api/events/create")).build();
+        Event event = Event.builder()
+                .eventName(eventDTO.getEventName())
+                .price(eventDTO.getPrice())
+                .startEvent(eventDTO.getStartEvent())
+                .eventHours(eventDTO.getEventHours())
+                .eventDescription(eventDTO.getEventDescription())
+                .playersQuantity(eventDTO.getPlayersQuantity())
+                .location(eventDTO.getLocation().toLowerCase())
+                .available(true)
+                .user(eventDTO.getUser())
+                .build();
+        eventService.save(event);
+        return ResponseEntity.created(new URI("/api/events/create")).build();
     }
+
     @PutMapping("/update/{id}")
-    public ResponseEntity<?> updateEvent(@PathVariable Long id, @RequestBody EventDTO eventDTO){
+    public ResponseEntity<?> updateEvent(@PathVariable Long id, @RequestBody EventDTO eventDTO) {
         Optional<Event> eventOptional = eventService.findById(id);
-        if(eventOptional.isPresent()){
+        if (eventOptional.isPresent()) {
             Event event = eventOptional.get();
             event.setEventName(eventDTO.getEventName());
             event.setPrice(eventDTO.getPrice());
@@ -57,10 +59,11 @@ public class EventController {
         }
         return ResponseEntity.notFound().build();
     }
+
     @PutMapping("/disable/{id}")
-    public ResponseEntity<?> disableEvent(@PathVariable Long id){
+    public ResponseEntity<?> disableEvent(@PathVariable Long id) {
         Optional<Event> eventOptional = eventService.findById(id);
-        if(eventOptional.isPresent()){
+        if (eventOptional.isPresent()) {
             Event event = eventOptional.get();
             event.setAvailable(false);
             eventService.save(event);
@@ -69,10 +72,34 @@ public class EventController {
         }
         return ResponseEntity.notFound().build();
     }
+
     @GetMapping("/findAll")
-    public ResponseEntity<?> findAll(){
+    public ResponseEntity<?> findAll() {
         List<EventDTO> eventDTOList = eventService.findAll()
                 .stream()
+                .map(event -> EventDTO.builder()
+                        .eventId(event.getEventId())
+                        .eventName(event.getEventName())
+                        .price(event.getPrice())
+                        .startEvent(event.getStartEvent())
+                        .eventHours(event.getEventHours())
+                        .eventDescription(event.getEventDescription())
+                        .playersQuantity(event.getPlayersQuantity())
+                        .location(event.getLocation())
+                        .available(event.isAvailable())
+                        .user(event.getUser())
+                        .build()
+                ).toList();
+        return ResponseEntity.ok(eventDTOList);
+    }
+
+    //Find events by location
+    @GetMapping("/location/{location}")
+    public ResponseEntity<?> findEventByLocation(@PathVariable String location) throws URISyntaxException {
+        if (location == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        List<EventDTO> eventDTOList = eventService.findEventsByLocation(location.toLowerCase()).stream()
                 .map(event -> EventDTO.builder()
                         .eventId(event.getEventId())
                         .eventName(event.getEventName())

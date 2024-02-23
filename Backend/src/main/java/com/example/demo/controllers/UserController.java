@@ -57,8 +57,8 @@ public class UserController {
                         .description(user.getDescription())
                         .position(user.getPosition())
                         .location(user.getLocation())
+                        .isActive(user.isActive())
                         .build()
-
                 ).toList();
         return ResponseEntity.ok(userListDTO);
     }
