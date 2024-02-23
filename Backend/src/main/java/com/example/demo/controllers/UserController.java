@@ -92,4 +92,33 @@ public class UserController {
         }
         return ResponseEntity.notFound().build();
     }
+
+    @PostMapping("/login/{email}/{password}")
+    public ResponseEntity<?> login(@PathVariable String email, @PathVariable String password)
+    {
+
+
+        Optional<User> userOptional = userService.findByUsernameAndPassword(email,password);
+
+        if(userOptional.isEmpty()){
+
+
+
+            return ResponseEntity.ok("User not found");
+        }
+
+        User user=userOptional.get();
+
+        UserDTO userDTO= UserDTO.builder()
+                .userName(user.getUserName())
+                .lastName((user.getLastName()))
+                .email(user.getEmail()).build()
+                ;
+
+
+
+
+        return ResponseEntity.ok(userDTO);
+
+    }
 }
