@@ -1,5 +1,6 @@
 package com.example.demo.service.impl;
 
+import com.example.demo.dto.UserDTO;
 import com.example.demo.entities.User;
 import com.example.demo.persistance.IUserDAO;
 import com.example.demo.service.IUserService;
@@ -34,5 +35,11 @@ public class UserServiceImpl implements IUserService {
     @Override
     public void deleteById(Long id) {
         userDAO.deleteById(id);
+    }
+
+    @Override
+    public Optional<User> findByUsernameAndPassword(String email, String password) {
+
+        return  userDAO.findByEmailAndPassword(email,password);
     }
 }
