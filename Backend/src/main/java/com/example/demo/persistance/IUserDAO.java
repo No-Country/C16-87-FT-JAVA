@@ -16,6 +16,6 @@ public interface IUserDAO {
 
     void deleteById(Long id);
 
-    Optional<User> findByEmailAndPassword(String email, String password);
+    Optional<User> findByEmailAndPassword(String email);
 
 }

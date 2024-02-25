@@ -3,8 +3,11 @@ package com.example.demo.controllers;
 import com.example.demo.dto.UserDTO;
 import com.example.demo.entities.User;
 import com.example.demo.service.IUserService;
+import com.example.demo.utils.JWTUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import de.mkammerer.argon2.Argon2;
+import de.mkammerer.argon2.Argon2Factory;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -16,9 +19,11 @@ import java.util.Optional;
 @RequestMapping("/api/user")
 public class UserController {
     private final IUserService userService;
+    private final JWTUtil jwtUtil;
 
-    public UserController(IUserService userService) {
+    public UserController(IUserService userService, JWTUtil jwtUtil) {
         this.userService = userService;
+        this.jwtUtil = jwtUtil;
     }
 
     @PostMapping("/save")
@@ -27,11 +32,15 @@ public class UserController {
         if (userDTO.getUserName().isBlank()) {
             return ResponseEntity.badRequest().build();
         }
+        Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
+        String hash  = argon2.hash(1, 1024, 1, userDTO.getPassword());
+
+
         User user = User.builder()
                 .userName(userDTO.getUserName())
                 .lastName(userDTO.getLastName())
                 .email(userDTO.getEmail())
-                .password(userDTO.getPassword())
+                .password(hash) // se setea el hash, no el password literal
                 .age(userDTO.getAge())
                 .description(userDTO.getDescription())
                 .position(userDTO.getPosition())
@@ -94,31 +103,36 @@ public class UserController {
     }
 
     @PostMapping("/login/{email}/{password}")
-    public ResponseEntity<?> login(@PathVariable String email, @PathVariable String password)
-    {
-
-
-        Optional<User> userOptional = userService.findByUsernameAndPassword(email,password);
+    public ResponseEntity<?> login(@PathVariable String email, @PathVariable String password) {
+        Optional<User> userOptional = userService.findByUsernameAndPassword(email);
 
         if(userOptional.isEmpty()){
-
-
-
             return ResponseEntity.ok("User not found");
         }
 
         User user=userOptional.get();
+        System.out.println("true pass:  "+user.getPassword());
 
         UserDTO userDTO= UserDTO.builder()
                 .userName(user.getUserName())
-                .lastName((user.getLastName()))
-                .email(user.getEmail()).build()
-                ;
+                .lastName(user.getLastName())
+                .email(user.getEmail())
+                .build();
 
 
+        Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
+        String hash  = argon2.hash(1, 1024, 1, password);
+        System.out.println(" hashed pass entered:  "+ hash);
 
+        if(argon2.verify(user.getPassword(), password)){
+            String tokenJwt = jwtUtil.create(String.valueOf(user.getUserId()), user.getEmail());
+            System.out.println("tokenjwt"+tokenJwt);
 
-        return ResponseEntity.ok(userDTO);
+            return ResponseEntity.ok(tokenJwt);
+        }
+        System.out.println("passss"+password);
+        return ResponseEntity.ok("Incorrect password");
+
 
     }
 }

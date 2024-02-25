@@ -35,8 +35,8 @@ public class UserDAOImp implements IUserDAO {
     }
 
     @Override
-    public Optional<User> findByEmailAndPassword(String email, String password) {
+    public Optional<User> findByEmailAndPassword(String email) {
 
-        return userRepository.findByEmailAndPassword(email,password);
+        return userRepository.findByEmailAndPassword(email);
     }
 }

@@ -12,5 +12,5 @@ public interface IUserService {
     void save(User user);
     void deleteById(Long id);
 
-    Optional<User> findByUsernameAndPassword(String email, String password);
+    Optional<User> findByUsernameAndPassword(String email);
 }

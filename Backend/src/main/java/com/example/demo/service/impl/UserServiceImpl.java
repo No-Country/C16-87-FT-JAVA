@@ -38,8 +38,8 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public Optional<User> findByUsernameAndPassword(String email, String password) {
+    public Optional<User> findByUsernameAndPassword(String email) {
 
-        return  userDAO.findByEmailAndPassword(email,password);
+        return  userDAO.findByEmailAndPassword(email);
     }
 }

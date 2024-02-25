@@ -13,8 +13,8 @@ public interface UserRepository extends CrudRepository<User,Long> {
 // esto nos sirve para consultas personalizadas
 
 
-    @Query("SELECT s FROM User s  WHERE s.email = :email and s.password  = :password and s.isActive = true")
-    Optional<User> findByEmailAndPassword(String email, String password);
+    @Query("SELECT s FROM User s  WHERE s.email = :email and s.isActive = true")
+    Optional<User> findByEmailAndPassword(String email);
 
 
 }
