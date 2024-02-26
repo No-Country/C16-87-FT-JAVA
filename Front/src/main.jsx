@@ -33,7 +33,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/vistaPartido",
-    element: <VistaPartido />,
+    element: <Navbar />,
   },
   Navbar,
 ]);
