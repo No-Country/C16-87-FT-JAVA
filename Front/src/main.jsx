@@ -7,6 +7,8 @@ import Landing from "./components/Landing/Landing.jsx";
 import Register from "./components/Register/Register.jsx";
 import Login from "./components/Login/Login.jsx";
 import JugarPartido from "./components/Jugar/JugarPartido.jsx";
+import Navbar from "./components/Navbar.jsx";
+import VistaPartido from "./components/VistaPartido.jsx";
 
 const router = createBrowserRouter([
   {
@@ -25,6 +27,15 @@ const router = createBrowserRouter([
     path: "/jugar",
     element: <JugarPartido />,
   },
+  {
+    path: "/nav",
+    element: <Navbar />,
+  },
+  {
+    path: "/vistaPartido",
+    element: <VistaPartido />,
+  },
+  Navbar,
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(

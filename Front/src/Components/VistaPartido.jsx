@@ -1,28 +1,30 @@
 // VistaPartido.js
 // eslint-disable-next-line no-unused-vars
-import React from 'react';
-import PartidoInfo from './PartidoInfo';
-import LugarInfo from './LugarInfo';
-import PostulacionButton from './PostulacionesBotton';
+import React from "react";
+import PartidoInfo from "./PartidoInfo";
+import LugarInfo from "./LugarInfo";
+import PostulacionButton from "./PostulacionesBotton";
+import Navbar from "./Navbar";
 
 const VistaPartido = () => {
   // Datos de ejemplo para pasar a los componentes
   const partidoData = {
-    creador: 'Nombre del Creador',
+    creador: "Nombre del Creador",
     jugadoresFaltantes: 5,
   };
 
   const lugarData = {
-    fecha: 'Fecha del Partido',
-    horario: 'Horario del Partido',
+    fecha: "Fecha del Partido",
+    horario: "Horario del Partido",
     distancia: 10,
-    precio: '$10',
-    direccion: 'Dirección de la Cancha',
-    complejo: 'Nombre del Complejo',
+    precio: "$10",
+    direccion: "Dirección de la Cancha",
+    complejo: "Nombre del Complejo",
   };
 
   return (
     <div>
+      <Navbar />
       <PartidoInfo {...partidoData} />
       <LugarInfo {...lugarData} />
       <PostulacionButton />
