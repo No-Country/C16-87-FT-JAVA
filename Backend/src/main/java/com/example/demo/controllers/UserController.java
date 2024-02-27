@@ -4,6 +4,7 @@ import com.example.demo.dto.UserDTO;
 import com.example.demo.entities.User;
 import com.example.demo.service.IUserService;
 import com.example.demo.utils.JWTUtil;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import de.mkammerer.argon2.Argon2;
@@ -24,6 +25,11 @@ public class UserController {
     public UserController(IUserService userService, JWTUtil jwtUtil) {
         this.userService = userService;
         this.jwtUtil = jwtUtil;
+    }
+
+    private boolean validateToken(String token, Long userIdComparable) {
+        String userId = jwtUtil.getKey(token);
+        return userId.equals(userIdComparable.toString());
     }
 
     @PostMapping("/save")
@@ -90,16 +96,21 @@ public class UserController {
         return ResponseEntity.notFound().build();
     }
     @PutMapping("/disable/{id}")
-    public ResponseEntity<?> disableUser(@PathVariable Long id){
-        Optional<User> userOptional = userService.findById(id);
+    public ResponseEntity<?> disableUser(@PathVariable Long id, @RequestHeader(value="Authorization") String token){
 
-        if(userOptional.isPresent()){
-            User user = userOptional.get();
-            user.setActive(false);
-            userService.save(user);
-            return ResponseEntity.ok("Successfully disabled");
+        if (validateToken(token,id)) {
+
+            Optional<User> userOptional = userService.findById(id);
+
+            if (userOptional.isPresent()) {
+                User user = userOptional.get();
+                user.setActive(false);
+                userService.save(user);
+                return ResponseEntity.ok("Successfully disabled");
+            }
+            return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.status(HttpStatusCode.valueOf(401)).body("Invalid token");
     }
 
     @PostMapping("/login/{email}/{password}")
