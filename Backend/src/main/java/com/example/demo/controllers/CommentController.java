@@ -1,12 +1,10 @@
 package com.example.demo.controllers;
 
 import com.example.demo.dto.CommentDTO;
-import com.example.demo.dto.UserDTO;
 import com.example.demo.entities.Comment;
-import com.example.demo.entities.User;
 import com.example.demo.service.ICommentService;
-import com.example.demo.service.IUserService;
-import jakarta.websocket.server.PathParam;
+import com.example.demo.utils.JWTUtil;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,14 +18,26 @@ import java.util.Optional;
 @RequestMapping("/api/comment")
 public class CommentController{
     private final ICommentService commentService;
+    private final JWTUtil jwtUtil;
+    private final CommentDTO commentDTO;
 
-    public CommentController(ICommentService commentService) {
+    public CommentController(ICommentService commentService, JWTUtil jwtUtil ) {
         this.commentService = commentService;
+        this.jwtUtil=jwtUtil;
 
+
+
+
+    }
+    private boolean validateToken(String token, Long userIdComparable) {
+        //token contiene el id  del usuario
+        String userId = jwtUtil.getKey(token);
+        return userId.equals(userIdComparable.toString());
     }
 
     @PostMapping("/save")
-        public ResponseEntity<?> saveComment(@RequestBody CommentDTO commentDTO) throws URISyntaxException {
+        public ResponseEntity<?> saveComment(@RequestBody CommentDTO commentDTO,@RequestHeader(value="Authorization") String token) throws URISyntaxException {
+        if (validateToken(token,commentDTO.getUser().getUserId())) {
         Date currentDate = new Date();
         if (commentDTO.getCommentText().isBlank()) {
             return ResponseEntity.badRequest().build();
@@ -44,13 +54,18 @@ public class CommentController{
 
         return ResponseEntity.created(new URI("/api/comment/save")).build();
     }
+        return ResponseEntity.status(HttpStatusCode.valueOf(401)).body("Invalid token");
+    }
 
     @GetMapping("/findByUser/{userId}")
-    public ResponseEntity<?> findByUser(@PathVariable Long userId) throws URISyntaxException {
-
+    public ResponseEntity<?> findByUser(@PathVariable Long userId,@RequestHeader(value="Authorization") String token) throws URISyntaxException {
+        /*
         if (userId == null) {
             return ResponseEntity.badRequest().build();
         }
+
+         */
+
         List<CommentDTO> commentListDTO = commentService.findAllCommentsByUser(userId).stream()
                 .map(comment -> CommentDTO.builder()
                         .commentId(comment.getCommentId())
@@ -81,25 +96,33 @@ public class CommentController{
     }
 
 
-    @DeleteMapping("/delete/{commentId}")
-    public ResponseEntity<?> delete(@PathVariable Long commentId) throws URISyntaxException{
+    @DeleteMapping("/delete/{commentId}/{userId}")
+    public ResponseEntity<?> delete(@PathVariable Long commentId,@PathVariable Long userId, @RequestHeader(value="Authorization") String token) throws URISyntaxException {
 
-        if(commentId!= null){
-            commentService.deleteById(commentId);
-            return ResponseEntity.noContent().build();
+
+        if (this.validateToken(token, userId)) {  // Validación del token usando el userId obtenido del contexto de seguridad
+            if (commentId != null) {
+                commentService.deleteById(commentId);
+                return ResponseEntity.noContent().build();
+            }
+            return ResponseEntity.ok("Borrado exitoso"); // Mensaje en castellano
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token inválido"); // Mensaje en castellano
         }
-
-
-        return ResponseEntity.ok("Successfully Delete");
     }
 
-   // public Optional<Comment> findById(Long commentId) { return ( iCommentDAO.findById(commentId));}
+
+
+    // public Optional<Comment> findById(Long commentId) { return ( iCommentDAO.findById(commentId));}
    @GetMapping("/{commentId}")
    public ResponseEntity<?> commentById(@PathVariable Long commentId) throws URISyntaxException {
 
        if (commentId == null) {
            return ResponseEntity.badRequest().build();
        }
+
+
+
 
        Optional<Comment> foundComment = commentService.findById(commentId);
 
@@ -119,16 +142,20 @@ public class CommentController{
 
    }
     @PutMapping("/update/{commentId}")
-    public ResponseEntity<?> updateUser(@PathVariable Long commentId, @RequestBody CommentDTO commentDTO){
-        Optional<Comment> foundComment = commentService.findById(commentId);
+    public ResponseEntity<?> updateUser(@PathVariable Long commentId, @RequestBody CommentDTO commentDTO,@RequestHeader(value="Authorization") String token){
+    if (validateToken(token,commentDTO.getUser().getUserId())) {
+            Optional<Comment> foundComment = commentService.findById(commentId);
 
-        if(foundComment.isPresent()){
-            Comment comment = foundComment.get();
-            comment.setCommentText(commentDTO.getCommentText());
-            commentService.save(comment);
-            return ResponseEntity.ok("Successfully Updated");
+            if (foundComment.isPresent()) {
+                Comment comment = foundComment.get();
+                comment.setCommentText(commentDTO.getCommentText());
+                commentService.save(comment);
+                return ResponseEntity.ok("Successfully Updated");
+            }
+            return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.status(HttpStatusCode.valueOf(401)).body("Invalid token");
+
     }
 
 }
