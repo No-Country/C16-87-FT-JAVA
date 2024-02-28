@@ -21,6 +21,12 @@ import java.util.Optional;
 public class UserController {
     private final IUserService userService;
     private final JWTUtil jwtUtil;
+    //codigo de geolocalizacion
+    @Autowired
+    private RestTemplate restTemplate;
+    //RestTemplate es una clase asincrona, la misma espera la respuesta de la ubicacion para continuar,
+    //en el front se deja un cartel  que diga "cargando ubicacion"
+    private static final String API_URL = "http://ip-api.com/json";
 
     public UserController(IUserService userService, JWTUtil jwtUtil) {
         this.userService = userService;
@@ -145,5 +151,21 @@ public class UserController {
         return ResponseEntity.ok("Incorrect password");
 
 
+    }
+    //getCoordenadas
+    http://ip-api.com/json/24.48.0.1
+    @PostMapping("API_URL/{24.48.0.1}")
+    public ResponseEntity<?> location(@PathVariable int getLocalication) {
+
+
+
+
+    }
+    public ResponseEntity<?> getLocation(String ip) {
+
+        String url = API_URL + ip;
+        IpData ipData = restTemplate.getForObject(url, IpData.class);
+
+        // ... procesar datos
     }
 }

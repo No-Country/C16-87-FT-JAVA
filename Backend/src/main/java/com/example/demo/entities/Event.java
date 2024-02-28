@@ -35,6 +35,8 @@ public final class Event {
     private int playersQuantity;
     private String location;
     private boolean available;
+    private double latitud;
+    private double longitud;
 
     @ManyToOne
     @JoinColumn(name="user_id", nullable = false)
