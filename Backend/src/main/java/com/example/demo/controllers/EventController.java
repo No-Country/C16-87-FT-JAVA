@@ -21,23 +21,11 @@ public class EventController {
         this.eventService = eventService;
     }
 
-    @PostMapping("/get-location/{ip}")
-    public  double [] getLocation(@PathVariable String ip) {
-        double [] localizacionLatitudLongitud=new double[2];
-        // Convertir la respuesta JSON a un mapa
-        Map<String, Double> location = new ObjectMapper().readValue(response, new TypeReference<Map<String, Double>>() {});
 
-        // Obtener latitud y longitud
-        localizacionLatitudLongitud[0]= location.get("lat");
-        localizacionLatitudLongitud[1]= location.get("lon");
-
-
-        return localizacionLatitudLongitud;
-    }
     @PostMapping("/save")
     public ResponseEntity<?> createEvent(@RequestBody EventDTO eventDTO,@PathVariable String ip) throws URISyntaxException {
 
-        [] double localizacionLatitudLongitud=this.getLocation(ip)
+
 
         if (eventDTO.getEventName().isBlank()) {
             return ResponseEntity.badRequest().build();
@@ -50,8 +38,6 @@ public class EventController {
                 .eventDescription(eventDTO.getEventDescription())
                 .playersQuantity(eventDTO.getPlayersQuantity())
                 .location(eventDTO.getLocation().toLowerCase())
-                .latitud(localizacionLatitudLongitud[0])
-                .longitud(localizacionLatitudLongitud[1])
                 .available(true)
                 .user(eventDTO.getUser())
                 .build();

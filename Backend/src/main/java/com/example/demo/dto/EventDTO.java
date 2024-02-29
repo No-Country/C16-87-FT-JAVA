@@ -22,7 +22,5 @@ public class EventDTO {
     private int playersQuantity;
     private String location;
     private boolean available;
-    private double latitud;
-    private double longitud;
     private User user;
 }
