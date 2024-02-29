@@ -1,9 +1,6 @@
 package com.example.demo.utils;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtBuilder;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,9 +11,6 @@ import javax.xml.bind.DatatypeConverter;
 import java.security.Key;
 import java.util.Date;
 
-/**
- * @author Mahesh
- */
 @Component
 public class JWTUtil {
     @Value("${security.jwt.secret}")
@@ -31,13 +25,6 @@ public class JWTUtil {
     private final Logger log = LoggerFactory
             .getLogger(JWTUtil.class);
 
-    /**
-     * Create a new token.
-     *
-     * @param id
-     * @param subject
-     * @return
-     */
     public String create(String id, String subject) {
 
         // The JWT signature algorithm used to sign the token
@@ -64,33 +51,16 @@ public class JWTUtil {
         return builder.compact();
     }
 
-    /**
-     * Method to validate and read the JWT
-     *
-     * @param jwt
-     * @return
-     */
-    public String getValue(String jwt) {
-        // This line will throw an exception if it is not a signed JWS (as
-        // expected)
+    public String getSubject(String jwt) {
         Claims claims = Jwts.parser().setSigningKey(DatatypeConverter.parseBase64Binary(key))
                 .parseClaimsJws(jwt).getBody();
-
         return claims.getSubject();
     }
 
-    /**
-     * Method to validate and read the JWT
-     *
-     * @param jwt
-     * @return
-     */
-    public String getKey(String jwt) {
-        // This line will throw an exception if it is not a signed JWS (as
-        // expected)
+    public String getId(String jwt) {
         Claims claims = Jwts.parser().setSigningKey(DatatypeConverter.parseBase64Binary(key))
                 .parseClaimsJws(jwt).getBody();
-
         return claims.getId();
     }
+
 }

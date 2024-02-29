@@ -4,8 +4,8 @@ import com.example.demo.dto.EventDTO;
 import com.example.demo.entities.Event;
 import com.example.demo.service.IEventService;
 import com.example.demo.utils.JWTUtil;
-import io.jsonwebtoken.SignatureException;
-import org.springframework.http.HttpStatusCode;
+import io.jsonwebtoken.JwtException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,104 +27,84 @@ public class EventController {
     }
 
     private boolean validateToken(String token, Long userIdComparable) {
-        String userId = jwtUtil.getKey(token);
+        String userId = jwtUtil.getId(token);
         return userId.equals(userIdComparable.toString());
     }
-
 
     @PostMapping("/save")
     public ResponseEntity<?> createEvent(
             @RequestBody EventDTO eventDTO,
-            @RequestHeader(value = "Authorization") String token,
-            @RequestHeader(value = "UserId") Long userId) throws URISyntaxException {
-        try {
-            if (validateToken(token, userId)) {
-                if (eventDTO.getEventName().isBlank()) {
-                    return ResponseEntity.badRequest().build();
-                }
-                if (eventDTO.getUser().getUserId() != userId) {
-                    return ResponseEntity.status(HttpStatusCode.valueOf(403)).body("Unauthorized operation. User mismatch.");
-                }
-                Event event = Event.builder()
-                        .eventName(eventDTO.getEventName())
-                        .price(eventDTO.getPrice())
-                        .startEvent(eventDTO.getStartEvent())
-                        .eventHours(eventDTO.getEventHours())
-                        .eventDescription(eventDTO.getEventDescription())
-                        .playersQuantity(eventDTO.getPlayersQuantity())
-                        .location(eventDTO.getLocation().toLowerCase())
-                        .available(true)
-                        .user(eventDTO.getUser())
-                        .build();
-                eventService.save(event);
-                return ResponseEntity.created(new URI("/api/events/create")).build();
+            @RequestHeader(value = "Authorization") String token) throws URISyntaxException {
+        if (validateToken(token, eventDTO.getUser().getUserId())) {
+            if (eventDTO.getEventName().isBlank()) {
+                return ResponseEntity.badRequest().build();
             }
-        } catch (SignatureException e) {
-            return ResponseEntity.status(HttpStatusCode.valueOf(401)).body("Invalid token. Please, login again.");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatusCode.valueOf(500)).body("An unexpected error occurred. Please try again later.");
+            Event event = Event.builder()
+                    .eventName(eventDTO.getEventName())
+                    .price(eventDTO.getPrice())
+                    .startEvent(eventDTO.getStartEvent())
+                    .eventHours(eventDTO.getEventHours())
+                    .eventDescription(eventDTO.getEventDescription())
+                    .playersQuantity(eventDTO.getPlayersQuantity())
+                    .location(eventDTO.getLocation().toLowerCase())
+                    .available(true)
+                    .user(eventDTO.getUser())
+                    .build();
+            eventService.save(event);
+            return ResponseEntity.created(new URI("/api/events/create")).build();
         }
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
     }
 
     @PutMapping("/update/{eventId}")
     public ResponseEntity<?> updateEvent(
             @PathVariable Long eventId,
             @RequestBody EventDTO eventDTO,
-            @RequestHeader(value = "Authorization") String token,
-            @RequestHeader(value = "UserId") Long userId) {
+            @RequestHeader(value = "Authorization") String token) {
 
-        try {
-            if (validateToken(token, userId)) {
-                Optional<Event> eventOptional = eventService.findById(eventId);
-                if (eventOptional.isPresent()) {
-                    Event event = eventOptional.get();
-                    if (event.getUser().getUserId() != userId) {
-                        return ResponseEntity.status(HttpStatusCode.valueOf(403)).body("Unauthorized operation. User mismatch.");
-                    }
-                    event.setEventName(eventDTO.getEventName());
-                    event.setPrice(eventDTO.getPrice());
-                    event.setStartEvent(eventDTO.getStartEvent());
-                    event.setEventDescription(eventDTO.getEventDescription());
-                    event.setPlayersQuantity(eventDTO.getPlayersQuantity());
-                    event.setLocation(eventDTO.getLocation());
-                    eventService.save(event);
-
-                    return ResponseEntity.ok("Successfully updated");
+        if (validateToken(token, eventDTO.getUser().getUserId())) {
+            Optional<Event> eventOptional = eventService.findById(eventId);
+            if (eventOptional.isPresent()) {
+                Event event = eventOptional.get();
+                if (!event.getUser().getUserId().equals(eventDTO.getUser().getUserId())) {
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Unauthorized operation. User mismatch.");
                 }
+                event.setEventName(eventDTO.getEventName());
+                event.setPrice(eventDTO.getPrice());
+                event.setStartEvent(eventDTO.getStartEvent());
+                event.setEventDescription(eventDTO.getEventDescription());
+                event.setPlayersQuantity(eventDTO.getPlayersQuantity());
+                event.setLocation(eventDTO.getLocation());
+                eventService.save(event);
+                return ResponseEntity.ok("Successfully updated");
             }
-        } catch (SignatureException e) {
-            return ResponseEntity.status(HttpStatusCode.valueOf(401)).body("Invalid token. Please, login again.");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatusCode.valueOf(500)).body("An unexpected error occurred. Please try again later.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Event not found");
         }
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
     }
 
     @PutMapping("/disable/{eventId}")
     public ResponseEntity<?> disableEvent(
             @PathVariable Long eventId,
-            @RequestHeader(value = "Authorization") String token,
-            @RequestHeader(value = "UserId") Long userId) {
-        try {
-            if (validateToken(token, userId)) {
-                Optional<Event> eventOptional = eventService.findById(eventId);
-                if (eventOptional.isPresent()) {
-                    Event event = eventOptional.get();
-                    if (event.getUser().getUserId() != userId) {
-                        return ResponseEntity.status(HttpStatusCode.valueOf(403)).body("Unauthorized operation. User mismatch.");
-                    }
-                    event.setAvailable(false);
-                    eventService.save(event);
-                    return ResponseEntity.ok("Successfully disabled");
-                }
-            }
-        } catch (SignatureException e) {
-            return ResponseEntity.status(HttpStatusCode.valueOf(401)).body("Invalid token. Please, login again.");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatusCode.valueOf(500)).body("An unexpected error occurred. Please try again later.");
+            @RequestHeader(value = "Authorization") String token) {
+        Optional<Event> eventOptional = eventService.findById(eventId);
+        if (eventOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Event not found");
         }
-        return ResponseEntity.badRequest().build();
+        Event event = eventOptional.get();
+        try {
+            if (!validateToken(token, event.getUser().getUserId())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Unauthorized operation. User mismatch.");
+            }
+            if (!event.isAvailable()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Event already disabled");
+            }
+            event.setAvailable(false);
+            eventService.save(event);
+            return ResponseEntity.ok("Successfully disabled");
+        } catch (JwtException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
+        }
     }
 
     @GetMapping("/findAll")
@@ -146,8 +126,6 @@ public class EventController {
                 ).toList();
         return ResponseEntity.ok(eventDTOList);
     }
-
-    //Find events by location
     @GetMapping("/location/{location}")
     public ResponseEntity<?> findEventByLocation(@PathVariable String location) {
         if (location == null) {

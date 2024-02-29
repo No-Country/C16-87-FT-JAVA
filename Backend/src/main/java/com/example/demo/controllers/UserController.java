@@ -5,6 +5,7 @@ import com.example.demo.dto.UserDTO;
 import com.example.demo.entities.User;
 import com.example.demo.service.IUserService;
 import com.example.demo.utils.JWTUtil;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,136 +30,126 @@ public class UserController {
     }
 
     private boolean validateToken(String token, Long userIdComparable) {
-        String userId = jwtUtil.getKey(token);
+        String userId = jwtUtil.getId(token);
         return userId.equals(userIdComparable.toString());
     }
 
-        @PostMapping("/save")
-        public ResponseEntity<?> saveUser(@RequestBody UserDTO userDTO) throws URISyntaxException {
-            Date currentDate = new Date();
-            if (userDTO.getUserName().isBlank()) {
-                return ResponseEntity.badRequest().build();
-            }
-            Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
-            String hash = argon2.hash(1, 1024, 1, userDTO.getPassword());
-
-
-            User user = User.builder()
-                    .userName(userDTO.getUserName())
-                    .lastName(userDTO.getLastName())
-                    .email(userDTO.getEmail())
-                    .password(hash) // se setea el hash, no el password literal
-                    .age(userDTO.getAge())
-                    .description(userDTO.getDescription())
-                    .position(userDTO.getPosition())
-                    .location(userDTO.getLocation())
-                    .createdOn(currentDate)
-                    .isActive(true)
-                    .build();
-            userService.save(user);
-
-            return ResponseEntity.created(new URI("/api/user/save")).build();
+    @PostMapping("/save")
+    public ResponseEntity<?> saveUser(@RequestBody UserDTO userDTO) throws URISyntaxException {
+        Date currentDate = new Date();
+        if (userDTO.getUserName().isBlank()) {
+            return ResponseEntity.badRequest().build();
         }
+        Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
+        String hash = argon2.hash(1, 1024, 1, userDTO.getPassword());
 
-        @GetMapping("/findAll/{id}")
-        public ResponseEntity<?> findAll(@PathVariable Long id, @RequestHeader(value = "Authorization") String token) {
 
-            if (validateToken(token, id)) {
+        User user = User.builder()
+                .userName(userDTO.getUserName())
+                .lastName(userDTO.getLastName())
+                .email(userDTO.getEmail())
+                .password(hash) // se setea el hash, no el password literal
+                .age(userDTO.getAge())
+                .description(userDTO.getDescription())
+                .position(userDTO.getPosition())
+                .location(userDTO.getLocation())
+                .createdOn(currentDate)
+                .isActive(true)
+                .build();
+        userService.save(user);
 
-                List<UserDTO> userListDTO = userService.findAll()
-                        .stream()
-                        .map(user -> UserDTO.builder()
-                                .userId(user.getUserId())
-                                .userName(user.getUserName())
-                                .lastName((user.getLastName()))
-                                .email(user.getEmail())
-                                .age(user.getAge())
-                                .description(user.getDescription())
-                                .position(user.getPosition())
-                                .location(user.getLocation())
-                                .isActive(user.isActive())
-                                .build()
-                        ).toList();
-                return ResponseEntity.ok(userListDTO);
-            }
-            return ResponseEntity.status(HttpStatusCode.valueOf(401)).body("Invalid token");
-        }
-
-        @PutMapping("/update/{id}")
-        public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody UserDTO userDTO,
-                                            @RequestHeader(value = "Authorization") String token) {
-
-            if (validateToken(token, id)) {
-
-                Optional<User> userOptional = userService.findById(id);
-
-                if (userOptional.isPresent()) {
-                    User user = userOptional.get();
-                    user.setUserName(userDTO.getUserName());
-                    user.setLastName(userDTO.getLastName());
-                    user.setEmail(userDTO.getEmail());
-                    user.setAge(userDTO.getAge());
-                    user.setDescription(userDTO.getDescription());
-                    user.setLocation(userDTO.getLocation());
-
-                    userService.save(user);
-                    return ResponseEntity.ok("Successfully Updated");
-                }
-                return ResponseEntity.notFound().build();
-            }
-            return ResponseEntity.status(HttpStatusCode.valueOf(401)).body("Invalid token");
-        }
-
-        @PutMapping("/disable/{id}")
-        public ResponseEntity<?> disableUser(@PathVariable Long id, @RequestHeader(value = "Authorization") String token) {
-
-            if (validateToken(token, id)) {
-
-                Optional<User> userOptional = userService.findById(id);
-
-                if (userOptional.isPresent()) {
-                    User user = userOptional.get();
-                    user.setActive(false);
-                    userService.save(user);
-                    return ResponseEntity.ok("Successfully disabled");
-                }
-                return ResponseEntity.notFound().build();
-            }
-            return ResponseEntity.status(HttpStatusCode.valueOf(401)).body("Invalid token");
-        }
-
-        @PostMapping("/login/{email}/{password}")
-        @ResponseBody
-        public ResponseEntity<?> login(@PathVariable String email, @PathVariable String password) {
-
-            Optional<User> userOptional = userService.findByUsernameAndPassword(email);
-
-            if (userOptional.isEmpty()) {
-                return ResponseEntity.ok("User not found");
-            }
-
-            User user = userOptional.get();
-
-            UserDTO userDTO = UserDTO.builder()
-                    .userName(user.getUserName())
-                    .lastName(user.getLastName())
-                    .email(user.getEmail())
-                    .build();
-
-            Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
-
-            String hash = argon2.hash(1, 1024, 1, password);
-
-            if (argon2.verify(user.getPassword(), password)) {
-
-                String tokenJwt = jwtUtil.create(String.valueOf(user.getUserId()), user.getEmail());
-
-                TokenResponseDTO tokenResponse = new TokenResponseDTO(tokenJwt, user.getUserId().toString());
-
-                return ResponseEntity.ok(tokenResponse);
-            }
-
-            return ResponseEntity.ok("Incorrect password");
-
-        }
+        return ResponseEntity.created(new URI("/api/user/save")).build();
     }
+
+    @GetMapping("/findAll")
+    public ResponseEntity<?> findAll() {
+        List<UserDTO> userListDTO = userService.findAll()
+                .stream()
+                .map(user -> UserDTO.builder()
+                        .userId(user.getUserId())
+                        .userName(user.getUserName())
+                        .lastName((user.getLastName()))
+                        .email(user.getEmail())
+                        .age(user.getAge())
+                        .description(user.getDescription())
+                        .position(user.getPosition())
+                        .location(user.getLocation())
+                        .isActive(user.isActive())
+                        .build()
+                ).toList();
+        return ResponseEntity.ok(userListDTO);
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> updateUser(
+            @PathVariable Long id,
+            @RequestBody UserDTO userDTO,
+            @RequestHeader(value = "Authorization") String token) {
+
+        if (validateToken(token, id)) {
+            Optional<User> userOptional = userService.findById(id);
+            if (userOptional.isPresent()) {
+                User user = userOptional.get();
+                user.setUserName(userDTO.getUserName());
+                user.setLastName(userDTO.getLastName());
+                user.setEmail(userDTO.getEmail());
+                user.setAge(userDTO.getAge());
+                user.setDescription(userDTO.getDescription());
+                user.setLocation(userDTO.getLocation());
+
+                userService.save(user);
+                return ResponseEntity.ok("Successfully Updated");
+            }
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
+    }
+
+    @PutMapping("/disable/{id}")
+    public ResponseEntity<?> disableUser(@PathVariable Long id, @RequestHeader(value = "Authorization") String token) {
+
+        if (validateToken(token, id)) {
+            Optional<User> userOptional = userService.findById(id);
+            if (userOptional.isPresent()) {
+                User user = userOptional.get();
+                user.setActive(false);
+                userService.save(user);
+                return ResponseEntity.ok("Successfully disabled");
+            }
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
+    }
+
+    @PostMapping("/login/{email}/{password}")
+    @ResponseBody
+    public ResponseEntity<?> login(@PathVariable String email, @PathVariable String password) {
+
+        Optional<User> userOptional = userService.findByUsernameAndPassword(email);
+
+        if (userOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+        User user = userOptional.get();
+        UserDTO userDTO = UserDTO.builder()
+                .userName(user.getUserName())
+                .lastName(user.getLastName())
+                .email(user.getEmail())
+                .build();
+
+        Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
+        String hash = argon2.hash(1, 1024, 1, password);
+
+        if (argon2.verify(user.getPassword(), password)) {
+
+            String tokenJwt = jwtUtil.create(String.valueOf(user.getUserId()), user.getEmail());
+
+            TokenResponseDTO tokenResponse = new TokenResponseDTO(tokenJwt, user.getUserId().toString());
+
+            return ResponseEntity.ok(tokenResponse);
+        }
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Incorrect password");
+
+    }
+}
