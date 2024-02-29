@@ -44,7 +44,7 @@ const Login = () => {
           <div className="w-5/6 ml-8 transform border-b-2 bg-transparent text-lg duration-300 focus-within:border-green-500">
             <input
               type="text"
-              placeholder="Nombre de usuario"
+              placeholder="Email"
               className="w-full border-none bg-transparent outline-none placeholder:italic focus:outline-none"
             />
           </div>
