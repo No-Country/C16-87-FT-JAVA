@@ -31,6 +31,7 @@ public class EventController {
         return userId.equals(userIdComparable.toString());
     }
 
+
     @PostMapping("/save")
     public ResponseEntity<?> createEvent(
             @RequestBody EventDTO eventDTO,
