@@ -19,18 +19,15 @@ public class CommentServiceImpl implements ICommentService {
 
     @Override
     public List<Comment> findAllCommentsByUser(Long userId) {
-        return (List<Comment>) iCommentDAO.findAllCommentsByUser(userId);
+        return iCommentDAO.findAllCommentsByUser(userId);
     }
 
     @Override
     public List<Comment> findAllCommentsByEvent(Long eventId)
-    {return (List<Comment>) iCommentDAO.findAllCommentsByEvent(eventId);
+    {return iCommentDAO.findAllCommentsByEvent(eventId);
     }
-
     @Override
     public Optional<Comment> findById(Long commentId) { return ( iCommentDAO.findById(commentId));}
-
-
     @Override
     public void save(Comment comment) { iCommentDAO.save(comment);
     }

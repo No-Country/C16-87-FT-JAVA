@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -26,7 +26,7 @@ public final class Event {
     private String eventName;
     private Float price;
     @Column(name="start_event")
-    private Date startEvent;
+    private LocalDateTime startEvent;
     @Column(name="event_hours")
     private int eventHours;
     @Column(name="event_description")
@@ -44,4 +44,8 @@ public final class Event {
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Comment> comments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<UserEvent> participants = new ArrayList<>();
 }

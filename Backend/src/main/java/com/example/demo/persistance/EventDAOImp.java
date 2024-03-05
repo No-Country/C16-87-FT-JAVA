@@ -9,9 +9,7 @@ import java.util.Optional;
 
 @Component
 public class EventDAOImp implements IEventDAO {
-
     private final EventRepository eventRepository;
-
     public EventDAOImp(EventRepository eventRepository) {
         this.eventRepository = eventRepository;
     }
@@ -20,22 +18,18 @@ public class EventDAOImp implements IEventDAO {
     public List<Event> findAll() {
         return (List<Event>) eventRepository.findAll();
     }
-
     @Override
     public Optional<Event> findById(Long eventId) {
         return eventRepository.findById(eventId);
     }
-
     @Override
     public void save(Event event) {
         eventRepository.save(event);
     }
-
     @Override
     public void deleteById(Long eventId) {
         eventRepository.deleteById(eventId);
     }
-
     @Override
     public List<Event> findEventsByLocation(String location) {
         return eventRepository.findEventsByLocation(location);

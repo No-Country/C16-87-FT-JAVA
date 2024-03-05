@@ -5,8 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -16,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @ToString
 @Builder
-@Table(name = "users") //"user" es una palabra reservada en posgres SQL
+@Table(name = "users")
 public final class User {
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
@@ -34,7 +34,7 @@ public final class User {
     private Position position;
     private String location;
     @Column(name = "created_on")
-    private Date createdOn;
+    private LocalDate createdOn;
     @Column(name = "is_active")
     private boolean isActive;
 
@@ -42,5 +42,7 @@ public final class User {
     @JsonIgnore
     private List<Event> events = new ArrayList<>();
 
-
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL , fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<UserEvent> enrolledEvents = new ArrayList<>();
 }

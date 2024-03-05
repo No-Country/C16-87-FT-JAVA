@@ -1,28 +1,36 @@
 package com.example.demo.controllers;
 
 import com.example.demo.dto.EventDTO;
+import com.example.demo.dto.UserEventDTO;
 import com.example.demo.entities.Event;
+import com.example.demo.entities.User;
+import com.example.demo.entities.UserEvent;
 import com.example.demo.service.IEventService;
+import com.example.demo.service.IUserEventService;
+import com.example.demo.service.IUserService;
 import com.example.demo.utils.JWTUtil;
 import io.jsonwebtoken.JwtException;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/event")
 public class EventController {
-
     private final IEventService eventService;
+    private final IUserService userService;
+    private final IUserEventService userEventService;
     private final JWTUtil jwtUtil;
 
-    public EventController(IEventService eventService, JWTUtil jwtUtil) {
+    public EventController(IEventService eventService, IUserService userService, IUserEventService userEventService, JWTUtil jwtUtil) {
         this.eventService = eventService;
+        this.userService = userService;
+        this.userEventService = userEventService;
         this.jwtUtil = jwtUtil;
     }
 
@@ -31,14 +39,25 @@ public class EventController {
         return userId.equals(userIdComparable.toString());
     }
 
-    @PostMapping("/save")
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<String> handleValidationException(MethodArgumentNotValidException ex) {
+        String errorMessage = ex.getBindingResult().getFieldErrors().get(0).getDefaultMessage();
+        return ResponseEntity.badRequest().body("Validation error: " + errorMessage);
+    }
+
+    @PostMapping("/create")
     public ResponseEntity<?> createEvent(
+            @Valid
             @RequestBody EventDTO eventDTO,
-            @RequestHeader(value = "Authorization") String token) throws URISyntaxException {
-        if (validateToken(token, eventDTO.getUser().getUserId())) {
-            if (eventDTO.getEventName().isBlank()) {
-                return ResponseEntity.badRequest().build();
-            }
+            @RequestHeader(value = "Authorization") String token) {
+        if (eventDTO.getUser().getUserId() == null) {
+            return ResponseEntity.badRequest().body("You need to provide the 'userId' in the 'user' field");
+        }
+        Optional<User> userOptional = userService.findById(eventDTO.getUser().getUserId());
+        if (userOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User associated with the token not found");
+        }
+        if (!validateToken(token, eventDTO.getUser().getUserId())) {
             Event event = Event.builder()
                     .eventName(eventDTO.getEventName())
                     .price(eventDTO.getPrice())
@@ -51,7 +70,13 @@ public class EventController {
                     .user(eventDTO.getUser())
                     .build();
             eventService.save(event);
-            return ResponseEntity.created(new URI("/api/events/create")).build();
+            UserEvent userEvent = UserEvent.builder()
+                    .user(event.getUser())
+                    .event(event)
+                    .build();
+            userEventService.save(userEvent);
+
+            return ResponseEntity.ok("Event created successfully");
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
     }
@@ -59,9 +84,16 @@ public class EventController {
     @PutMapping("/update/{eventId}")
     public ResponseEntity<?> updateEvent(
             @PathVariable Long eventId,
+            @Valid
             @RequestBody EventDTO eventDTO,
             @RequestHeader(value = "Authorization") String token) {
-
+        if (eventDTO.getUser().getUserId() == null) {
+            return ResponseEntity.badRequest().body("You need to provide the 'userId' in the 'user' field");
+        }
+        Optional<User> userOptional = userService.findById(eventDTO.getUser().getUserId());
+        if (userOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User associated with the token not found");
+        }
         if (validateToken(token, eventDTO.getUser().getUserId())) {
             Optional<Event> eventOptional = eventService.findById(eventId);
             if (eventOptional.isPresent()) {
@@ -126,6 +158,7 @@ public class EventController {
                 ).toList();
         return ResponseEntity.ok(eventDTOList);
     }
+
     @GetMapping("/location/{location}")
     public ResponseEntity<?> findEventByLocation(@PathVariable String location) {
         if (location == null) {
@@ -146,5 +179,79 @@ public class EventController {
                         .build()
                 ).toList();
         return ResponseEntity.ok(eventDTOList);
+    }
+
+    @PostMapping("/{eventId}/join/{userId}")
+    public ResponseEntity<?> addPlayer(
+            @PathVariable Long eventId,
+            @PathVariable Long userId,
+            @RequestHeader(value = "Authorization") String token) {
+        if (validateToken(token, userId)) {
+            Optional<Event> eventOptional = eventService.findById(eventId);
+            Optional<User> userOptional = userService.findById(userId);
+            if (eventOptional.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Event not found");
+            }
+            if (userOptional.isPresent()) {
+                Event event = eventOptional.get();
+                User user = userOptional.get();
+                if (userEventService.isUserInEvent(eventId, userId)) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User already joined.");
+                }
+                if (userEventService.allUsersInEvent(eventId) >= event.getPlayersQuantity()) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Event is full");
+                }
+                UserEvent userEvent = UserEvent.builder()
+                        .user(user)
+                        .event(event)
+                        .build();
+                userEventService.save(userEvent);
+                return ResponseEntity.ok("Player added to event successfully");
+            }
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
+    }
+
+    @DeleteMapping("/{eventId}/withdraw/{userId}")
+    public ResponseEntity<?> withdrawParticipation(
+            @PathVariable Long eventId,
+            @PathVariable Long userId,
+            @RequestHeader(value = "Authorization") String token) {
+        if (validateToken(token, userId)) {
+            Optional<Event> eventOptional = eventService.findById(eventId);
+            Optional<User> userOptional = userService.findById(userId);
+            if (eventOptional.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Event not found");
+            }
+            if (userOptional.isPresent()) {
+                Optional<UserEvent> userEventOptional = userEventService.userEventByEventIdAndUserId(eventId, userId);
+                if (userEventOptional.isEmpty()) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User in event not found");
+                }
+                UserEvent userEvent = userEventOptional.get();
+                userEventService.delete(userEvent);
+                return ResponseEntity.ok("Participation successfully withdrawn");
+            }
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
+    }
+
+    @GetMapping("{eventId}/players")
+    public ResponseEntity<?> playersByEventId(@PathVariable Long eventId) {
+        Optional<Event> eventOptional = eventService.findById(eventId);
+        if (eventOptional.isPresent()) {
+            List<UserEventDTO> userEventDTOList = userEventService.findUserEventByEventId(eventId)
+                    .stream()
+                    .map(userEvent -> UserEventDTO.builder()
+                            .userEventId(userEvent.getUserEventId())
+                            .user(userEvent.getUser())
+                            .event(userEvent.getEvent())
+                            .build()
+                    ).toList();
+            return ResponseEntity.ok(userEventDTOList);
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Event not found");
     }
 }

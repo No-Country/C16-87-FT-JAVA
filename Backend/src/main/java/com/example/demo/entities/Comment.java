@@ -3,9 +3,7 @@ package com.example.demo.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.util.Date;
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -23,8 +21,7 @@ public final class Comment {
     @Column(name="comment_text")
     private String commentText;
     @Column(name="comment_date")
-    private Date commentDate;
-
+    private LocalDateTime commentDate;
     @ManyToOne
     @JoinColumn(name = "event_id", nullable = false)
     @JsonIgnore

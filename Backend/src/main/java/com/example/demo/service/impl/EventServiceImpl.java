@@ -43,4 +43,5 @@ public class EventServiceImpl implements IEventService {
     public List<Event> findEventsByLocation(String location) {
         return eventDAO.findEventsByLocation(location);
     }
+
 }
