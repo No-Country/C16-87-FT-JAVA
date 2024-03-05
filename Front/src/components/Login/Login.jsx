@@ -1,20 +1,32 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useFormik } from "formik";
 import wc from "./wc.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Login = () => {
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const navigate = useNavigate();
 
-  const togglePasswordVisibility = (field) => {
-    if (field === "password") {
-      setShowPassword(!showPassword);
-      showPass("password");
-    } else if (field === "confirmPassword") {
-      setShowConfirmPassword(!showConfirmPassword);
-      showPass("confirmPassword");
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const createdSuccessfully = queryParams.get("createdSuccessfully");
+
+    if (createdSuccessfully) {
+      toast.success("Usuario creado exitosamente. Inicia sesión.");
     }
+  }, [location.search]);
+
+  const [loading, setLoading] = useState(false);
+
+  const [showPassword, setShowPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+    showPass();
   };
 
   const showPass = () => {
@@ -26,9 +38,78 @@ const Login = () => {
     }
   };
 
+  // Configuración de Formik
+  const formik = useFormik({
+    initialValues: {
+      email: "",
+      password: "",
+    },
+    validate: (values) => {
+      const errors = {};
+
+      // Validación de email
+      if (!values.email) {
+        errors.email = "Por favor ingresa un correo electronico.";
+      } else if (
+        !/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/.test(values.email)
+      ) {
+        errors.email = "Ingresa un correo válido.";
+      }
+
+      // Validación de contraseña
+      if (!values.password) {
+        errors.password = "Por favor ingresa una contraseña.";
+      }
+
+      return errors;
+    },
+    onSubmit: (values, { resetForm }) => {
+      setLoading(true);
+
+      axios
+        .post(
+          `http://64.23.159.97:8080/api/auth/login/${values.email}/${values.password}`
+        )
+        .then((result) => {
+          console.log("soy result", result);
+          if (result.data.token) {
+            // Guardar el token en sessionStorage
+            sessionStorage.setItem("jwtToken", result.data.token);
+
+            toast.success("Inicio de sesión exitoso");
+            console.log("SE INICIÓ MEN");
+            navigate("/?loginSuccessfully=true");
+          }
+        })
+        .catch((err) => {
+          if (err.response.data === "User not found") {
+            toast.error("Usuario no encontrado");
+          } else {
+            toast.error("Usuario o contraseña incorrecto");
+          }
+        })
+        .finally(() => {
+          setLoading(false);
+          resetForm();
+        });
+    },
+  });
+
   return (
     <>
       <main className="mx-auto flex min-h-screen w-full items-center justify-center bg-gradient-to-br from-yellow-100 to-green-100 text-black">
+        <ToastContainer
+          position="bottom-center"
+          autoClose={2500}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="colored"
+        />
         <section className="flex w-[30rem] flex-col space-y-10">
           <div className="flex">
             <img className="w-32 h-40" src={wc} alt="" />
@@ -41,46 +122,63 @@ const Login = () => {
               </span>
             </div>
           </div>
-          <div className="w-5/6 ml-8 transform border-b-2 bg-transparent text-lg duration-300 focus-within:border-green-500">
-            <input
-              type="text"
-              placeholder="Email"
-              className="w-full border-none bg-transparent outline-none placeholder:italic focus:outline-none"
-            />
-          </div>
-
-          <div className="w-5/6 ml-8 transform border-b-2 bg-transparent text-lg duration-300 focus-within:border-green-500">
-            <input
-              type="password"
-              id="password"
-              placeholder="Contraseña"
-              className="w-full border-none bg-transparent outline-none placeholder:italic focus:outline-none pr-8"
-            />
-            <label
-              htmlFor="password"
-              className="absolute right-2 mt-2 cursor-pointer"
-            >
-              <FontAwesomeIcon
-                icon={showPassword ? faEye : faEyeSlash}
-                className="text-gray-500 text-sm mb-2"
-                onClick={togglePasswordVisibility}
+          <form onSubmit={formik.handleSubmit}>
+            <div className="w-5/6 ml-8 transform border-b-2 bg-transparent text-lg duration-300 focus-within:border-green-500">
+              <input
+                type="text"
+                placeholder="Email"
+                className="w-full border-none bg-transparent outline-none placeholder:italic focus:outline-none"
+                name="email"
+                value={formik.values.email}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                autoComplete="email"
               />
-            </label>
-            <input
-              type="checkbox"
-              id="password" // Mismo id que el input de contraseña
-              className="hidden"
-              onChange={togglePasswordVisibility}
-              onClick={showPass}
-              checked={showPassword}
-            />
-          </div>
+              {formik.touched.email && formik.errors.email && (
+                <div className="text-sm text-red-400 font-bold">
+                  {formik.errors.email}
+                </div>
+              )}
+            </div>
 
-          <div className="justify-center items-center flex">
-            <button className="flex gap-3 mt-1 cursor-pointer text-white font-semibold bg-gradient-to-r from-green-600 to-green-500 px-32 py-2 rounded-full border border-green-600 hover:scale-105 duration-200 hover:text-white hover:border-green-800 hover:from-green-500 hover:to-green-900">
-              Inciar sesión
-            </button>
-          </div>
+            <div className="w-5/6 ml-8 transform border-b-2 bg-transparent text-lg duration-300 focus-within:border-green-500">
+              <input
+                type={showPassword ? "text" : "password"}
+                id="password"
+                placeholder="Contraseña"
+                className="w-full border-none bg-transparent outline-none placeholder:italic focus:outline-none pr-8"
+                name="password"
+                autoComplete="password"
+                value={formik.values.password}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+              />
+              <label
+                htmlFor="password"
+                className="absolute right-2 mt-2 cursor-pointer"
+              >
+                <FontAwesomeIcon
+                  icon={showPassword ? faEye : faEyeSlash}
+                  className="text-gray-500 text-sm mb-2"
+                  onClick={togglePasswordVisibility}
+                />
+              </label>
+              {formik.touched.password && formik.errors.password && (
+                <div className="text-sm text-red-400 font-bold">
+                  {formik.errors.password}
+                </div>
+              )}
+            </div>
+
+            <div className="justify-center items-center flex">
+              <button
+                type="submit"
+                className="flex gap-3 mt-1 cursor-pointer text-white font-semibold bg-gradient-to-r from-green-600 to-green-500 px-32 py-2 rounded-full border border-green-600 hover:scale-105 duration-200 hover:text-white hover:border-green-800 hover:from-green-500 hover:to-green-900"
+              >
+                Iniciar sesión
+              </button>
+            </div>
+          </form>
 
           <a
             href="#"

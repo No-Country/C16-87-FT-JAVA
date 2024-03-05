@@ -4,23 +4,28 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { Formik } from "formik";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Register = () => {
+  const navigate = useNavigate();
+
   const [loading, setLoading] = useState(false);
 
   const onSubmitHandler = (values, { resetForm }) => {
     setLoading(true);
 
     axios
-      .post("http://64.23.159.97:8080/api/user/save", {
+      .post("http://64.23.159.97:8080/api/auth/register", {
         ...values,
-        location: "asd",
       })
       .then((result) => {
         console.log(result);
-        if (result.data === "Success") {
-          // Manejar el éxito, redirigir o realizar otras acciones necesarias
-          console.log();
+        if (result.data === "User registered successfully") {
+          toast.success("Usuario registrado exitosamente");
+
+          navigate("/login?createdSuccessfully=true");
         }
       })
       .catch((err) => console.log("Error", console.error(err)))
@@ -57,6 +62,7 @@ const Register = () => {
   return (
     <>
       <main className="mx-auto flex min-h-screen w-full items-center justify-center bg-gradient-to-br from-yellow-100 to-green-100 text-black">
+        <ToastContainer />
         <section className="flex w-[30rem] flex-col space-y-10">
           <div className="flex">
             <img className="w-28 h-44 mt-10" src={cc} alt="" />
@@ -74,14 +80,14 @@ const Register = () => {
               userName: "",
               email: "",
               password: "",
-              // confirmarContrasena: "",
+              confirmarContrasena: "",
             }}
             validate={(values) => {
               let errores = {};
               //Validación name
 
               if (!values.userName) {
-                errores.userName = "Debes ingresar un name de usuario.";
+                errores.userName = "Debes ingresar un nombre de usuario.";
               } else if (values.userName.length < 5) {
                 errores.userName = "El name debe tener al menos 5 caracteres.";
               } else if (values.userName.length > 16) {
@@ -167,7 +173,7 @@ const Register = () => {
                     <input
                       type="text"
                       name="userName"
-                      placeholder="userName de usuario"
+                      placeholder="Nombre de usuario"
                       className="w-full border-none bg-transparent outline-none placeholder:italic focus:outline-none"
                       value={values.userName}
                       onChange={handleChange}
@@ -259,7 +265,7 @@ const Register = () => {
                       placeholder="Confirma tu contraseña"
                       className="w-full border-none bg-transparent outline-none placeholder:italic focus:outline-none pr-8"
                       autoComplete="new-passwordConfirm"
-                      // value={values.confirmarContrasena}
+                      value={values.confirmarContrasena}
                       onChange={handleChange}
                       onBlur={handleBlur}
                     />

@@ -1,8 +1,32 @@
 import React from "react";
+import { useEffect } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Landing = () => {
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const loginSuccessfully = queryParams.get("loginSuccessfully");
+
+    if (loginSuccessfully) {
+      toast.success("Inicio de sesión exitoso!");
+    }
+  }, [location.search]);
+
   return (
     <div className="flex flex-col h-screen">
+      <ToastContainer
+        position="bottom-center"
+        autoClose={2500}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
       <img
         className="w-full h-1/2 object-cover"
         src="https://piquecorto.com.ar/wp-content/uploads/2022/12/Messi-beso-copa-del-mundo-Credito-REUTERS-Hannah-Mckay.png"
