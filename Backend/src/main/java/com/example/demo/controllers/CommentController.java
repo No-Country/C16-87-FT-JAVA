@@ -3,17 +3,18 @@ package com.example.demo.controllers;
 import com.example.demo.dto.CommentDTO;
 import com.example.demo.entities.Comment;
 import com.example.demo.entities.Event;
+import com.example.demo.entities.User;
 import com.example.demo.service.ICommentService;
 import com.example.demo.service.IEventService;
+import com.example.demo.service.IUserService;
 import com.example.demo.utils.JWTUtil;
 import io.jsonwebtoken.JwtException;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,10 +22,12 @@ import java.util.Optional;
 @RequestMapping("/api/comment")
 public class CommentController {
     private final ICommentService commentService;
+    private final IUserService userService;
     private final IEventService eventService;
     private final JWTUtil jwtUtil;
-    public CommentController(ICommentService commentService, JWTUtil jwtUtil,IEventService eventService) {
+    public CommentController(ICommentService commentService, IUserService userService,IEventService eventService, JWTUtil jwtUtil) {
         this.commentService = commentService;
+        this.userService = userService;
         this.eventService = eventService;
         this.jwtUtil = jwtUtil;
     }
@@ -32,13 +35,28 @@ public class CommentController {
         String userId = jwtUtil.getId(token);
         return userId.equals(userIdComparable.toString());
     }
-
-    @PostMapping("/save")
-    public ResponseEntity<?> saveComment(
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<String> handleValidationException(MethodArgumentNotValidException ex) {
+        String errorMessage = ex.getBindingResult().getFieldErrors().get(0).getDefaultMessage();
+        return ResponseEntity.badRequest().body("Validation error: " + errorMessage);
+    }
+    @PostMapping("/create")
+    public ResponseEntity<?> createComment(
+            @Valid
             @RequestBody CommentDTO commentDTO,
-            @RequestHeader(value = "Authorization") String token) throws URISyntaxException {
+            @RequestHeader(value = "Authorization") String token) {
+        if (commentDTO.getUser().getUserId() == null) {
+            return ResponseEntity.badRequest().body("You need to provide the 'userId' in the 'user' field");
+        }
+        if (commentDTO.getEvent().getEventId() == null) {
+            return ResponseEntity.badRequest().body("You need to provide the 'eventId' in the 'event' field");
+        }
+        Optional<User> userOptional = userService.findById(commentDTO.getUser().getUserId());
+        if (userOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User associated with the token not found");
+        }
         if (validateToken(token, commentDTO.getUser().getUserId())) {
-            Date currentDate = new Date();
+            LocalDateTime currentDate = LocalDateTime.now();
             Optional<Event> eventOptional = eventService.findById(commentDTO.getEvent().getEventId());
             if(eventOptional.isEmpty()){
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Event not found");
@@ -53,17 +71,40 @@ public class CommentController {
                     .user(commentDTO.getUser())
                     .build();
             commentService.save(comment);
-            return ResponseEntity.created(new URI("/api/comment/save")).build();
+            return ResponseEntity.ok("Comment created successfully");
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
     }
-    @GetMapping("/findByEvent/{eventId}")
-    public ResponseEntity<?> findByEvent(@PathVariable Long eventId){
-        if (eventId == null) {
-            return ResponseEntity.badRequest().build();
+    @PutMapping("/update/{commentId}")
+    public ResponseEntity<?> updateComment(
+            @PathVariable Long commentId,
+            @Valid
+            @RequestBody CommentDTO commentDTO,
+            @RequestHeader(value = "Authorization") String token) {
+        if (commentDTO.getUser().getUserId() == null) {
+            return ResponseEntity.badRequest().body("You need to provide the 'userId' in the 'user' field");
         }
-        List<CommentDTO> commentListDTO = commentService.findAllCommentsByEvent(eventId).stream().map(comment -> CommentDTO.builder().commentId(comment.getCommentId()).commentText(comment.getCommentText()).user(comment.getUser()).event(comment.getEvent()).build()).toList();
-        return ResponseEntity.ok(commentListDTO);
+        if (commentDTO.getEvent().getEventId() == null) {
+            return ResponseEntity.badRequest().body("You need to provide the 'eventId' in the 'event' field");
+        }
+        Optional<User> userOptional = userService.findById(commentDTO.getUser().getUserId());
+        if (userOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User associated with the token not found");
+        }
+        if (validateToken(token, commentDTO.getUser().getUserId())) {
+            Optional<Comment> commentOptional = commentService.findById(commentId);
+            if (commentOptional.isPresent()) {
+                Comment comment = commentOptional.get();
+                if (!comment.getUser().getUserId().equals(commentDTO.getUser().getUserId())) {
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Unauthorized operation. User mismatch.");
+                }
+                comment.setCommentText(commentDTO.getCommentText());
+                commentService.save(comment);
+                return ResponseEntity.ok("Successfully Updated");
+            }
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Comment not found");
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
     }
     @DeleteMapping("/delete/{commentId}")
     public ResponseEntity<?> delete(
@@ -83,29 +124,23 @@ public class CommentController {
         } catch (JwtException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
         }
-
     }
-    @PutMapping("/update/{commentId}")
-    public ResponseEntity<?> updateComment(
-            @PathVariable Long commentId,
-            @RequestBody CommentDTO commentDTO,
-            @RequestHeader(value = "Authorization") String token) {
-        if (validateToken(token, commentDTO.getUser().getUserId())) {
-            Optional<Comment> commentOptional = commentService.findById(commentId);
-            if (commentOptional.isPresent()) {
-                Comment comment = commentOptional.get();
-                if (!comment.getUser().getUserId().equals(commentDTO.getUser().getUserId())) {
-                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Unauthorized operation. User mismatch.");
-                }
-                comment.setCommentText(commentDTO.getCommentText());
-                commentService.save(comment);
-                return ResponseEntity.ok("Successfully Updated");
-            }
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Comment not found");
+    @GetMapping("/findByEvent/{eventId}")
+    public ResponseEntity<?> findByEvent(@PathVariable Long eventId){
+        Optional<Event> eventOptional = eventService.findById(eventId);
+        if (eventOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Event not found");
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
+        List<CommentDTO> commentListDTO = commentService.findAllCommentsByEvent(
+                eventId).stream().map(
+                        comment -> CommentDTO.builder()
+                                .commentId(comment.getCommentId())
+                                .commentText(comment.getCommentText())
+                                .user(comment.getUser())
+                                .event(comment.getEvent())
+                                .build()).toList();
+        return ResponseEntity.ok(commentListDTO);
     }
-
 }
 
 

@@ -1,6 +1,5 @@
 package com.example.demo.persistance;
 
-import com.example.demo.dto.UserDTO;
 import com.example.demo.entities.User;
 import com.example.demo.repository.UserRepository;
 import org.springframework.stereotype.Component;
@@ -38,5 +37,9 @@ public class UserDAOImp implements IUserDAO {
     public Optional<User> findByEmailAndPassword(String email) {
 
         return userRepository.findByEmailAndPassword(email);
+    }
+    @Override
+    public boolean emailExists(String email) {
+        return userRepository.emailExists(email);
     }
 }

@@ -1,6 +1,5 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.dto.UserDTO;
 import com.example.demo.entities.User;
 import com.example.demo.persistance.IUserDAO;
 import com.example.demo.service.IUserService;
@@ -41,5 +40,10 @@ public class UserServiceImpl implements IUserService {
     public Optional<User> findByUsernameAndPassword(String email) {
 
         return  userDAO.findByEmailAndPassword(email);
+    }
+
+    @Override
+    public boolean emailExists(String email) {
+        return  userDAO.emailExists(email);
     }
 }
