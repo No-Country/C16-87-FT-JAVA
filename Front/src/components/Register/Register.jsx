@@ -6,8 +6,8 @@ import { Formik } from "formik";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
-import { IoAlertCircleOutline } from "react-icons/io5";
 import "react-toastify/dist/ReactToastify.css";
+import { IoAlertCircleOutline } from "react-icons/io5";
 
 const Register = () => {
   const navigate = useNavigate();

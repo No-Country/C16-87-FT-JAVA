@@ -15,9 +15,13 @@ const Login = () => {
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     const createdSuccessfully = queryParams.get("createdSuccessfully");
+    const ifNotLog = queryParams.get("isNotLog");
 
     if (createdSuccessfully) {
       toast.success("Usuario creado exitosamente. Inicia sesión.");
+    }
+    if (ifNotLog) {
+      toast.error("Necesitas loguearte para crear partido!");
     }
   }, [location.search]);
 
