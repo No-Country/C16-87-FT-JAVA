@@ -33,9 +33,12 @@ public final class Event {
     private String eventDescription;
     @Column(name= "players_quantity")
     private int playersQuantity;
+    @Column(name = "remaining_players")
+    private int remainingPlayers;
     private String location;
+    private Float latitude;
+    private Float longitude;
     private boolean available;
-
     @ManyToOne
     @JoinColumn(name="user_id", nullable = false)
     @JsonIgnore
