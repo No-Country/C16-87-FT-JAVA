@@ -17,6 +17,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @RestController
@@ -168,26 +169,33 @@ public class EventController {
         return ResponseEntity.ok(eventDTOList);
     }
 
-    @GetMapping("/location/{location}")
-    public ResponseEntity<?> findEventByLocation(@PathVariable String location) {
-        if (location == null) {
-            return ResponseEntity.badRequest().build();
+    @GetMapping("/coordinates/{latitude}/{longitude}/{distance}")
+    public ResponseEntity<?> findEventByLocation(@PathVariable double latitude,@PathVariable double longitude,@PathVariable double distance) {
+                if (latitude!=0 && longitude!=0 && distance!=0) {
+
+
+            double distanceMt = distance * 1000;
+            List<EventDTO> eventDTOList = eventService.findEventByLocation(latitude, longitude, distanceMt).stream()
+                    .map(event -> EventDTO.builder()
+                            .eventId(event.getEventId())
+                            .eventName(event.getEventName())
+                            .price(event.getPrice())
+                            .startEvent(event.getStartEvent())
+                            .eventHours(event.getEventHours())
+                            .eventDescription(event.getEventDescription())
+                            .playersQuantity(event.getPlayersQuantity())
+                            .location(event.getLocation())
+                            .longitude(event.getLongitude())
+                            .latitude(event.getLatitude())
+                            .available(event.isAvailable())
+                            .user(event.getUser())
+                            .build()
+                    ).toList();
+
+            return ResponseEntity.ok(eventDTOList);
         }
-        List<EventDTO> eventDTOList = eventService.findEventsByLocation(location.toLowerCase()).stream()
-                .map(event -> EventDTO.builder()
-                        .eventId(event.getEventId())
-                        .eventName(event.getEventName())
-                        .price(event.getPrice())
-                        .startEvent(event.getStartEvent())
-                        .eventHours(event.getEventHours())
-                        .eventDescription(event.getEventDescription())
-                        .playersQuantity(event.getPlayersQuantity())
-                        .location(event.getLocation())
-                        .available(event.isAvailable())
-                        .user(event.getUser())
-                        .build()
-                ).toList();
-        return ResponseEntity.ok(eventDTOList);
+        return ResponseEntity.badRequest().body("Invalid parameters");
+
     }
 
     @PostMapping("/{eventId}/join/{userId}")

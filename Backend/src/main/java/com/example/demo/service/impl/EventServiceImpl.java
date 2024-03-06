@@ -40,8 +40,9 @@ public class EventServiceImpl implements IEventService {
     }
 
     @Override
-    public List<Event> findEventsByLocation(String location) {
-        return eventDAO.findEventsByLocation(location);
+    public List<Event> findEventByLocation(double latitude,double longitude,double distance) {
+        return eventDAO.findEventByLocation(latitude,longitude,distance);
     }
+
 
 }

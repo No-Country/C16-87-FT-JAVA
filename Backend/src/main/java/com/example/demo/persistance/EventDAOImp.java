@@ -31,7 +31,7 @@ public class EventDAOImp implements IEventDAO {
         eventRepository.deleteById(eventId);
     }
     @Override
-    public List<Event> findEventsByLocation(String location) {
-        return eventRepository.findEventsByLocation(location);
+    public List<Event> findEventByLocation(double latitude,double longitude,double distance) {
+        return eventRepository.findEventByLocation( latitude, longitude, distance);
     }
 }

@@ -1,6 +1,8 @@
 package com.example.demo.service;
 
 import com.example.demo.entities.Event;
+import org.springframework.web.bind.annotation.PathVariable;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -9,5 +11,7 @@ public interface IEventService {
     Optional<Event> findById(Long eventId);
     void save(Event event);
     void deleteById(Long eventId);
-    List<Event> findEventsByLocation(String location);
+    List<Event> findEventByLocation(double latitude,double longitud,double distance);
+
+
 }

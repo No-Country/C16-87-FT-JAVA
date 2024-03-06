@@ -35,9 +35,9 @@ public class EventDTO {
     @NotNull(message = "'latitude' cannot be null")
     private String location;
     @NotNull(message = "'latitude' cannot be null")
-    private Float latitude;
+    private double latitude;
     @NotNull(message = "'longitude' cannot be null")
-    private Float longitude;
+    private double longitude;
     private boolean available;
     @NotNull(message = "User cannot be empty. You need to provide the userId field.")
     private User user;
