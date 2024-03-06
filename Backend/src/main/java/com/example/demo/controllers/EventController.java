@@ -50,6 +50,7 @@ public class EventController {
             @Valid
             @RequestBody EventDTO eventDTO,
             @RequestHeader(value = "Authorization") String token) {
+
         if (eventDTO.getUser().getUserId() == null) {
             return ResponseEntity.badRequest().body("You need to provide the 'userId' in the 'user' field");
         }
@@ -57,7 +58,10 @@ public class EventController {
         if (userOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User associated with the token not found");
         }
-        if (!validateToken(token, eventDTO.getUser().getUserId())) {
+        if (validateToken(token, eventDTO.getUser().getUserId())) {
+            if(eventDTO.getRemainingPlayers() > eventDTO.getPlayersQuantity() - 1){
+                return ResponseEntity.badRequest().body("Validation error: remainingPlayers must be less than "+ (eventDTO.getPlayersQuantity() - 1));
+            }
             Event event = Event.builder()
                     .eventName(eventDTO.getEventName())
                     .price(eventDTO.getPrice())
@@ -65,7 +69,10 @@ public class EventController {
                     .eventHours(eventDTO.getEventHours())
                     .eventDescription(eventDTO.getEventDescription())
                     .playersQuantity(eventDTO.getPlayersQuantity())
+                    .remainingPlayers(eventDTO.getRemainingPlayers())
                     .location(eventDTO.getLocation().toLowerCase())
+                    .latitude(eventDTO.getLatitude())
+                    .longitude(eventDTO.getLongitude())
                     .available(true)
                     .user(eventDTO.getUser())
                     .build();
@@ -75,7 +82,6 @@ public class EventController {
                     .event(event)
                     .build();
             userEventService.save(userEvent);
-
             return ResponseEntity.ok("Event created successfully");
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
@@ -97,6 +103,7 @@ public class EventController {
         if (validateToken(token, eventDTO.getUser().getUserId())) {
             Optional<Event> eventOptional = eventService.findById(eventId);
             if (eventOptional.isPresent()) {
+
                 Event event = eventOptional.get();
                 if (!event.getUser().getUserId().equals(eventDTO.getUser().getUserId())) {
                     return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Unauthorized operation. User mismatch.");
@@ -107,6 +114,8 @@ public class EventController {
                 event.setEventDescription(eventDTO.getEventDescription());
                 event.setPlayersQuantity(eventDTO.getPlayersQuantity());
                 event.setLocation(eventDTO.getLocation());
+                event.setLatitude(eventDTO.getLatitude());
+                event.setLongitude(eventDTO.getLongitude());
                 eventService.save(event);
                 return ResponseEntity.ok("Successfully updated");
             }
@@ -198,7 +207,7 @@ public class EventController {
                 if (userEventService.isUserInEvent(eventId, userId)) {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User already joined.");
                 }
-                if (userEventService.allUsersInEvent(eventId) >= event.getPlayersQuantity()) {
+                if (event.getRemainingPlayers() == 0) {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Event is full");
                 }
                 UserEvent userEvent = UserEvent.builder()
@@ -206,6 +215,9 @@ public class EventController {
                         .event(event)
                         .build();
                 userEventService.save(userEvent);
+
+                event.setRemainingPlayers(event.getRemainingPlayers()-1);
+                eventService.save(event);
                 return ResponseEntity.ok("Player added to event successfully");
             }
             return ResponseEntity.badRequest().build();
@@ -231,6 +243,10 @@ public class EventController {
                 }
                 UserEvent userEvent = userEventOptional.get();
                 userEventService.delete(userEvent);
+
+                Event event = eventOptional.get();
+                event.setRemainingPlayers(event.getRemainingPlayers() + 1);
+                eventService.save(event);
                 return ResponseEntity.ok("Participation successfully withdrawn");
             }
             return ResponseEntity.badRequest().build();

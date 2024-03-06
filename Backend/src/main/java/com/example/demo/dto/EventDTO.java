@@ -27,10 +27,17 @@ public class EventDTO {
     private int eventHours;
     private String eventDescription;
     @NotNull(message = "'playersQuantity' cannot be null")
-    @Min(value = 2,message = "'playersQuantity' must be between 5 and 40")
-    @Max(value = 40 ,message = "'playersQuantity' must be between 5 and 40")
+    @Min(value = 10,message = "'playersQuantity' must be between 10 and 22")
+    @Max(value = 22 ,message = "'playersQuantity' must be between 10 and 22")
     private int playersQuantity;
+    @NotNull(message = "'remainingPlayers' cannot be null")
+    private int remainingPlayers;
+    @NotNull(message = "'latitude' cannot be null")
     private String location;
+    @NotNull(message = "'latitude' cannot be null")
+    private Float latitude;
+    @NotNull(message = "'longitude' cannot be null")
+    private Float longitude;
     private boolean available;
     @NotNull(message = "User cannot be empty. You need to provide the userId field.")
     private User user;
