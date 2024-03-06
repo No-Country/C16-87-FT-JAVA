@@ -9,4 +9,5 @@ import java.util.List;
 public interface EventRepository extends CrudRepository<Event,Long> {
     @Query("SELECT e FROM Event e WHERE e.location = ?1")
     List<Event> findEventsByLocation(String location);
+
 }
