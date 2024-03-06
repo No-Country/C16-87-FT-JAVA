@@ -94,7 +94,7 @@ const Login = () => {
 
             toast.success("Inicio de sesión exitoso");
             console.log("SE INICIÓ MEN");
-            navigate("/?loginSuccessfully=true");
+            navigate("/home?loginSuccessfully=true");
           }
         })
         .catch((err) => {

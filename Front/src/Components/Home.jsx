@@ -1,9 +1,19 @@
 // eslint-disable-next-line no-unused-vars
-import React from "react";
+import React, { useEffect } from "react";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Home = () => {
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const loginSuccessfully = queryParams.get("loginSuccessfully");
+
+    if (loginSuccessfully) {
+      toast.success("Inicio de sesión exitoso!");
+    }
+  }, [location.search]);
   return (
     <div>
       <Navbar />
@@ -15,6 +25,18 @@ const Home = () => {
         />
 
         <section className="bg-gradient-to-tr  from-yellow-100 to-green-100 rounded-t-3xl flex-1 p-4 flex flex-col justify-center items-center">
+          <ToastContainer
+            position="bottom-center"
+            autoClose={2500}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="colored"
+          />
           <h1 className="text-5xl font-bold text-slate-800 mb-2">
             ¿Pinta Fulbo?
           </h1>
@@ -33,4 +55,3 @@ const Home = () => {
 };
 
 export default Home;
-
