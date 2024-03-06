@@ -1,3 +1,7 @@
+## FUTBOL YA
+
+![Logo de Fútbol Ya](https://cdn.discordapp.com/attachments/1136484648344621087/1215012655690162236/Logotipo_Equipo_de_Futbol_Simple_Dinamico_Amarillo_y_Negro.png?ex=65fb33b6&is=65e8beb6&hm=8939b7a45377e231806c4f4396a3066a11e4ec6ec2d6434abff850dfdf253f19&)
+
 ## ¿Cómo funciona?
 
 1. **Crea tu cuenta:** Regístrate en Fútbol Ya para comenzar a organizar tus partidos.
