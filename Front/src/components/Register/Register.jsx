@@ -145,6 +145,14 @@ const Register = () => {
                     <span>Por favor ingresa una contraseña.</span>
                   </div>
                 );
+              } else if (values.password.includes(" ")) {
+                // Validación para espacios en blanco
+                errores.password = (
+                  <div className="flex items-center">
+                    <IoAlertCircleOutline className="mr-2" />
+                    <span>La contraseña no puede contener espacios.</span>
+                  </div>
+                );
               } else if (values.password.length < 8) {
                 errores.password = (
                   <div className="flex items-center">

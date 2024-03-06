@@ -99,9 +99,8 @@ const Login = () => {
         })
         .catch((err) => {
           if (err.response.data === "User not found") {
+            console.log(err.response.data);
             toast.error("Usuario no encontrado");
-          } else {
-            toast.error("Usuario o contraseña incorrecto");
           }
         })
         .finally(() => {
