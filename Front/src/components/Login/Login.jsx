@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useFormik } from "formik";
+import { useFormik, Form, Field, ErrorMessage } from "formik";
 import wc from "./wc.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
@@ -7,6 +7,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { IoAlertCircleOutline } from "react-icons/io5";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -49,16 +50,31 @@ const Login = () => {
 
       // Validación de email
       if (!values.email) {
-        errors.email = "Por favor ingresa un correo electronico.";
+        errors.email = (
+          <div className="flex items-center">
+            <IoAlertCircleOutline className="mr-2" />
+            <span>Por favor ingresa un correo electrónico</span>
+          </div>
+        );
       } else if (
         !/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/.test(values.email)
       ) {
-        errors.email = "Ingresa un correo válido.";
+        errors.email = (
+          <div className="flex items-center">
+            <IoAlertCircleOutline className="mr-2" />
+            <span>Ingresa un correo válido.</span>
+          </div>
+        );
       }
 
       // Validación de contraseña
       if (!values.password) {
-        errors.password = "Por favor ingresa una contraseña.";
+        errors.password = (
+          <div className="flex items-center">
+            <IoAlertCircleOutline className="mr-2" />
+            <span>Por favor ingresa una contraseña</span>
+          </div>
+        );
       }
 
       return errors;
@@ -123,7 +139,13 @@ const Login = () => {
             </div>
           </div>
           <form onSubmit={formik.handleSubmit}>
-            <div className="w-5/6 ml-8 transform border-b-2 bg-transparent text-lg duration-300 focus-within:border-green-500">
+            <div
+              className={`w-5/6 ml-8 transform border-b-2 bg-transparent text-2xl duration-300 ${
+                formik.touched.email && formik.errors.email
+                  ? "border-red-500"
+                  : "focus-within:border-green-500"
+              }`}
+            >
               <input
                 type="text"
                 placeholder="Email"
@@ -141,7 +163,13 @@ const Login = () => {
               )}
             </div>
 
-            <div className="w-5/6 ml-8 transform border-b-2 bg-transparent text-lg duration-300 focus-within:border-green-500">
+            <div
+              className={`w-5/6 ml-8 mt-2 transform border-b-2 bg-transparent text-2xl mb-4 duration-300 ${
+                formik.errors.password
+                  ? "border-red-500"
+                  : "focus-within:border-green-500"
+              }`}
+            >
               <input
                 type={showPassword ? "text" : "password"}
                 id="password"
@@ -173,7 +201,7 @@ const Login = () => {
             <div className="justify-center items-center flex">
               <button
                 type="submit"
-                className="flex gap-3 mt-1 cursor-pointer text-white font-semibold bg-gradient-to-r from-green-600 to-green-500 px-32 py-2 rounded-full border border-green-600 hover:scale-105 duration-200 hover:text-white hover:border-green-800 hover:from-green-500 hover:to-green-900"
+                className="flex gap-3 mt-8 cursor-pointer text-white font-semibold bg-gradient-to-r from-green-600 to-green-500 px-32 py-2 rounded-full border border-green-600 hover:scale-105 duration-200 hover:text-white hover:border-green-800 hover:from-green-500 hover:to-green-900"
               >
                 Iniciar sesión
               </button>

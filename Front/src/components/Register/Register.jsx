@@ -6,6 +6,7 @@ import { Formik } from "formik";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
+import { IoAlertCircleOutline } from "react-icons/io5";
 import "react-toastify/dist/ReactToastify.css";
 
 const Register = () => {
@@ -87,31 +88,70 @@ const Register = () => {
               //Validación name
 
               if (!values.userName) {
-                errores.userName = "Debes ingresar un nombre de usuario.";
+                errores.userName = (
+                  <div className="flex items-center">
+                    <IoAlertCircleOutline className="mr-2" />
+                    <span>Debes ingresar un nombre de usuario.</span>
+                  </div>
+                );
               } else if (values.userName.length < 5) {
-                errores.userName = "El name debe tener al menos 5 caracteres.";
+                errores.userName = (
+                  <div className="flex items-center">
+                    <IoAlertCircleOutline className="mr-2" />
+                    <span>El nombre debe tener al menos 5 caracteres.</span>
+                  </div>
+                );
               } else if (values.userName.length > 16) {
-                errores.userName = "Máximo 16 caracteres.";
+                errores.userName = (
+                  <div className="flex items-center">
+                    <IoAlertCircleOutline className="mr-2" />
+                    <span>Máximo 16 caracteres.</span>
+                  </div>
+                );
               } else if (!/^[a-zA-Z0-9]+$/.test(values.userName)) {
-                errores.userName = "Solo se aceptan letras y números.";
+                errores.userName = (
+                  <div className="flex items-center">
+                    <IoAlertCircleOutline className="mr-2" />
+                    <span>Solo se aceptan letras y números</span>
+                  </div>
+                );
               }
 
               //Validación correo
               if (!values.email) {
-                errores.email = "Por favor ingresa un correo electronico.";
+                errores.email = (
+                  <div className="flex items-center">
+                    <IoAlertCircleOutline className="mr-2" />
+                    <span>Por favor ingresa un correo electronico.</span>
+                  </div>
+                );
               } else if (
                 !/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/.test(
                   values.email
                 )
               ) {
-                errores.email = "Ingresa un correo válido.";
+                errores.email = (
+                  <div className="flex items-center">
+                    <IoAlertCircleOutline className="mr-2" />
+                    <span>Ingresa un correo válido.</span>
+                  </div>
+                );
               }
               // Validación contraseña
               if (!values.password) {
-                errores.password = "Por favor ingresa una contraseña.";
+                errores.password = (
+                  <div className="flex items-center">
+                    <IoAlertCircleOutline className="mr-2" />
+                    <span>Por favor ingresa una contraseña.</span>
+                  </div>
+                );
               } else if (values.password.length < 8) {
-                errores.password =
-                  "La contraseña debe tener al menos 8 caracteres.";
+                errores.password = (
+                  <div className="flex items-center">
+                    <IoAlertCircleOutline className="mr-2" />
+                    <span>La contraseña debe tener al menos 8 caracteres.</span>
+                  </div>
+                );
               } else {
                 // Validación de mayúscula
                 if (!/[A-Z]/.test(values.password)) {
