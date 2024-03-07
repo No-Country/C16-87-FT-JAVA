@@ -95,6 +95,7 @@ const Login = () => {
           if (result.data.token) {
             // Guardar el token en sessionStorage
             sessionStorage.setItem("jwtToken", result.data.token);
+            sessionStorage.setItem("userId", result.data.userId);
 
             toast.success("Inicio de sesión exitoso");
             console.log("SE INICIÓ MEN");

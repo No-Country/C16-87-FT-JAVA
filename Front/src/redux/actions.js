@@ -3,13 +3,16 @@ import axios from 'axios';
 
 export const CREATE_EVENT = 'CREATE_EVENT';
 
+
 export const createEvent = (event) => {
+    const token = sessionStorage.getItem("jwtToken");
     const endpoint = 'http://64.23.159.97:8080/api/event/create'; 
     return async (dispatch) => {
         try {
             const {data} = await axios.post(endpoint, JSON.stringify(event), {
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': `${token}`
                 }
             })
 
@@ -23,7 +26,7 @@ export const createEvent = (event) => {
             })
 
         } catch (error) {
-            console.log(error.message);
+            console.log('Error:', error.response);
         }
     }
 }

@@ -22,17 +22,20 @@ export const Map = ({ selectedLatLng }) => {
       map.fitBounds(bounds);
     }
 
-    // Actualizar el centro del mapa
-    // setCenterMap(prevCenterMap=> ({
-    //     lat: selectedLatLng.lat,
-    //     lng: selectedLatLng.lng
-    // }))
-    setCenterMap(
-      setCenterMap((prevCenterMap) => ({
-        lat: selectedLatLng.lat,
-        lng: selectedLatLng.lng,
+    if(selectedLatLng?.lat !== centerMap?.lat && selectedLatLng?.lng !== centerMap?.lng) {
+      setCenterMap(({
+          lat: selectedLatLng.lat,
+          lng: selectedLatLng.lng
       }))
-    );
+    }
+
+    // Actualizar el centro del mapa
+    // setCenterMap(
+    //   setCenterMap((prevCenterMap) => ({
+    //     lat: selectedLatLng.lat,
+    //     lng: selectedLatLng.lng,
+    //   }))
+    // );
   }, [selectedLatLng, centerMap]);
 
   return (

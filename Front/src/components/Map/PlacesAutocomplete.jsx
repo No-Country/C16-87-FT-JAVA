@@ -28,7 +28,7 @@ const loadScript = (url, callback) => {
     document.getElementsByTagName('head')[0].appendChild(script)
 }
 
-export const PlacesAutocomplete = () => {
+export const PlacesAutocomplete = ({onPlaceSelect}) => {
 
     const [query, setQuery] = useState("")
     const [selectedLatLng, setSelectedLatLng] = useState(null)
@@ -60,6 +60,8 @@ export const PlacesAutocomplete = () => {
 
         console.log({latLng});
         setSelectedLatLng(latLng);
+
+        onPlaceSelect({query, latLng})
     }
 
     useEffect(() => {
