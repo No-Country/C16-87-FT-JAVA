@@ -15,6 +15,8 @@ import VistaPartido from "./components/VistaPartido.jsx";
 import Nosotros from "./components/Nosotros.jsx";
 import Home from "./components/Home.jsx";
 import FormEvent from "./components/Forms/FormEvent.jsx";
+import Notificaciones from './components/Notificaciones.jsx';
+
 const router = createBrowserRouter([
   {
     path: "/home",
@@ -47,6 +49,10 @@ const router = createBrowserRouter([
   {
     path: "/crear-nuevo-partido",
     element: <FormEvent />,
+  },
+  {
+    path: "/notificaciones",
+    element: <Notificaciones />
   },
 ]);
 

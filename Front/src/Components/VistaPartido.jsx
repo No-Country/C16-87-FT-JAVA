@@ -1,35 +1,42 @@
-// VistaPartido.js
-// eslint-disable-next-line no-unused-vars
-import React from "react";
-import PartidoInfo from "./PartidoInfo";
-import LugarInfo from "./LugarInfo";
-import PostulacionButton from "./PostulacionesBotton";
-import Navbar from "./Navbar";
+import React from 'react';
+import { connect } from 'react-redux';
+import { postulateAction, addNotificationAction } from '../redux/actions.js';
+import PartidoInfo from './PartidoInfo.jsx';
+import LugarInfo from './LugarInfo.jsx';
+import PostulacionButton from './PostulacionesBotton.jsx';
+import Navbar from './Navbar.jsx';
 
-const VistaPartido = () => {
-  // Datos de ejemplo para pasar a los componentes
-  const partidoData = {
-    creador: "Nombre del Creador",
-    jugadoresFaltantes: 5,
+const VistaPartido = ({ selectedPartido, postulate, addNotification }) => {
+  const handleClick = (partido) => {
+    postulate(partido);
   };
 
-  const lugarData = {
-    fecha: "Fecha del Partido",
-    horario: "Horario del Partido",
-    distancia: 10,
-    precio: "$10",
-    direccion: "Dirección de la Cancha",
-    complejo: "Nombre del Complejo",
+  const handlePostulate = () => {
+    if (selectedPartido) {
+      const postulationNotification = `Te has postulado para el partido: ${selectedPartido.eventName}`;
+      addNotification(postulationNotification);
+    } else {
+      console.error('No hay un partido seleccionado para postularte.');
+    }
   };
 
   return (
     <div>
       <Navbar />
-      <PartidoInfo {...partidoData} />
-      <LugarInfo {...lugarData} />
-      <PostulacionButton />
+      <PartidoInfo onSelect={handleClick} />
+      <LugarInfo partido={selectedPartido} />
+      <PostulacionButton onPostulate={handlePostulate} />
     </div>
   );
 };
 
-export default VistaPartido;
+const mapStateToProps = (state) => ({
+  selectedPartido: state.selectedPartido,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  postulate: (partido) => dispatch(postulateAction(partido)),
+  addNotification: (notification) => dispatch(addNotificationAction(notification)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(VistaPartido);

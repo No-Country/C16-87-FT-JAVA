@@ -54,11 +54,11 @@ const Navbar = () => {
             </div>
             <span className="text-xs group-hover:text-white">Mi Red</span>
           </Link>
-          <Link to="/mensajes" className="flex flex-col items-center group">
+          <Link to="/notificaciones" className="flex flex-col items-center group">
             <div className="flex items-center mb-1">
               <FaEnvelope size={24} />
             </div>
-            <span className="text-xs group-hover:text-white">Mensajes</span>
+            <span className="text-xs group-hover:text-white">Notificaciones</span>
           </Link>
         </div>
       </div>
