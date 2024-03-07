@@ -13,15 +13,17 @@ const LugarInfo = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://64.23.159.97:8080/api/event/findAll');
+        const response = await fetch(
+          "http://64.23.159.97:8080/api/event/coordinates/-33.18/-67.4/10000"
+        );
         if (response.ok) {
           const data = await response.json();
           setPartidos(data);
         } else {
-          console.error('Error al obtener los datos');
+          console.error("Error al obtener los datos");
         }
       } catch (error) {
-        console.error('Error en la solicitud:', error);
+        console.error("Error en la solicitud:", error);
       }
     };
 
@@ -31,13 +33,27 @@ const LugarInfo = () => {
   return (
     <div className="flex flex-col items-center space-y-4">
       <div className="flex space-x-2">
-        <Card icon={<IoCalendarOutline />} text={partidos.length > 0 ? partidos[0].startEvent : ""} />
-        <Card icon={<IoTimeOutline />} text={partidos.length > 0 ? partidos[0].eventDescription : ""} />
-        <Card icon={<IoLocationOutline />} text={partidos.length > 0 ? partidos[0].location : ""} />
-        <Card icon={<IoCashOutline />} text={partidos.length > 0 ? partidos[0].price : ""} />
+        <Card
+          icon={<IoCalendarOutline />}
+          text={partidos.length > 0 ? partidos[0].startEvent : ""}
+        />
+        <Card
+          icon={<IoTimeOutline />}
+          text={partidos.length > 0 ? partidos[0].eventDescription : ""}
+        />
+        <Card
+          icon={<IoLocationOutline />}
+          text={partidos.length > 0 ? partidos[0].location : ""}
+        />
+        <Card
+          icon={<IoCashOutline />}
+          text={partidos.length > 0 ? partidos[0].price : ""}
+        />
       </div>
       <div className="bg-white p-4 rounded shadow-md">
-        <p className="text-black">Dirección: {partidos.length > 0 ? partidos[0].location : ""}</p>
+        <p className="text-black">
+          Dirección: {partidos.length > 0 ? partidos[0].location : ""}
+        </p>
       </div>
     </div>
   );
