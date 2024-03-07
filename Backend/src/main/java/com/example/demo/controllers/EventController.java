@@ -149,6 +149,35 @@ public class EventController {
         }
     }
 
+    @GetMapping("/findById/{eventId}")
+    public ResponseEntity<?> findById(
+            @PathVariable Long eventId
+    ){
+        Optional<Event> eventOptional = eventService.findById(eventId);
+        if (eventOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Event not found");
+        }
+        Event event = eventOptional.get();
+        EventDTO eventDTO = EventDTO.builder()
+                .eventId(event.getEventId())
+                .eventName(event.getEventName())
+                .price(event.getPrice())
+                .startEvent(event.getStartEvent())
+                .eventHours(event.getEventHours())
+                .eventDescription(event.getEventDescription())
+                .playersQuantity(event.getPlayersQuantity())
+                .remainingPlayers(event.getRemainingPlayers())
+                .location(event.getLocation())
+                .longitude(event.getLongitude())
+                .latitude(event.getLatitude())
+                .available(event.isAvailable())
+                .user(event.getUser()) //FIX THIS, IS DANGEROUS INSECUREE
+                .build();
+
+        return ResponseEntity.ok(event);
+        
+    }
+
     @GetMapping("/findAll")
     public ResponseEntity<?> findAll() {
         List<EventDTO> eventDTOList = eventService.findAll()
@@ -161,9 +190,12 @@ public class EventController {
                         .eventHours(event.getEventHours())
                         .eventDescription(event.getEventDescription())
                         .playersQuantity(event.getPlayersQuantity())
+                        .remainingPlayers(event.getRemainingPlayers())
                         .location(event.getLocation())
+                        .longitude(event.getLongitude())
+                        .latitude(event.getLatitude())
                         .available(event.isAvailable())
-                        .user(event.getUser())
+                        .user(event.getUser()) //FIX THIS, IS DANGEROUS INSECUREE
                         .build()
                 ).toList();
         return ResponseEntity.ok(eventDTOList);
@@ -184,11 +216,12 @@ public class EventController {
                             .eventHours(event.getEventHours())
                             .eventDescription(event.getEventDescription())
                             .playersQuantity(event.getPlayersQuantity())
+                            .remainingPlayers(event.getRemainingPlayers())
                             .location(event.getLocation())
                             .longitude(event.getLongitude())
                             .latitude(event.getLatitude())
                             .available(event.isAvailable())
-                            .user(event.getUser())
+                            .user(event.getUser()) //FIX THIS, IS DANGEROUS INSECUREE
                             .build()
                     ).toList();
 
