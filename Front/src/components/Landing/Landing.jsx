@@ -3,8 +3,11 @@ import React from "react";
 import { useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
 
 const Landing = () => {
+  const navigate = useNavigate();
+
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     const loginSuccessfully = queryParams.get("loginSuccessfully");
@@ -13,6 +16,16 @@ const Landing = () => {
       toast.success("Inicio de sesión exitoso!");
     }
   }, [location.search]);
+
+  const token = sessionStorage.getItem("jwtToken");
+
+  useEffect(() => {
+    if (token) {
+      navigate("/home");
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [token, navigate]);
 
   return (
     <div className="flex flex-col h-screen">

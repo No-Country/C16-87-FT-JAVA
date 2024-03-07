@@ -4,8 +4,11 @@ import Navbar from "./Navbar";
 import Footer from "./Footer";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
+  const navigate = useNavigate();
+
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     const loginSuccessfully = queryParams.get("loginSuccessfully");
@@ -14,6 +17,16 @@ const Home = () => {
       toast.success("Inicio de sesión exitoso!");
     }
   }, [location.search]);
+
+  const token = sessionStorage.getItem("jwtToken");
+
+  useEffect(() => {
+    if (!token) {
+      navigate("/");
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [token, navigate]);
   return (
     <div>
       <Navbar />
