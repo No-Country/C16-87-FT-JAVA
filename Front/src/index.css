@@ -3,6 +3,20 @@
 @tailwind components;
 @tailwind utilities;
 
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none; /* Quitar la flecha en navegadores WebKit */
+  margin: 0; /* Espaciado entre el número y el borde del input */
+}
+
+input[type="number"] {
+  -moz-appearance: textfield; 
+}
+
+textarea {
+  resize: none;
+}
+
 /* :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
