@@ -2,10 +2,6 @@
 
 ![Logo de Fútbol Ya](https://cdn.discordapp.com/attachments/1136484648344621087/1215012655690162236/Logotipo_Equipo_de_Futbol_Simple_Dinamico_Amarillo_y_Negro.png?ex=65fb33b6&is=65e8beb6&hm=8939b7a45377e231806c4f4396a3066a11e4ec6ec2d6434abff850dfdf253f19&)
 
-## FUTBOL YA!  
-  
-
-
 
 ### 
 ¡Bienvenido a "FutbolYa" - La App que Conecta Jugadores Ahora Mismo!  
@@ -13,12 +9,6 @@
   
 
 <br/>  
-
-
-## Rapidfire  
-<table><tr><td valign="top" width="50%">
-
-
 
 ### ¿Cómo funciona?  
 - 1- Crea tu cuenta: Regístrate en Fútbol Ya para comenzar a organizar tus partidos.
@@ -73,31 +63,6 @@ No más esperas interminables ni partidos cancelados. Con "FutbolYa", puedes bus
 <a href="https://docs.microsoft.com/en-us/powershell/" target="_blank"><img style="margin: 10px" src="https://profilinator.rishav.dev/skills-assets/powershell.png" alt="PowerShell" height="50" /></a>  
 <a href="https://www.tailwindcss.com/" target="_blank"><img style="margin: 10px" src="https://profilinator.rishav.dev/skills-assets/tailwindcss.svg" alt="Tailwind CSS" height="50" /></a>  
 </div>  
-
-<br/>  
-
-
-## Github Stats  
-<table><tr><td valign="top" width="50%">
-
-<img src="https://github-readme-stats.vercel.app/api?username=rishavanand&show_icons=true&count_private=true&hide_border=true" align="left" style="width: 100%" />
-
-</td><td valign="top" width="50%">
-
-<img src="https://github-readme-stats.vercel.app/api/top-langs/?username=rishavanand&hide_border=true&layout=compact" align="left" style="width: 100%" />
-
-</td></tr></table>  
-
-<br/>  
-
-  
-
-<br/>  
-
-![Profile views counter](https://komarev.com/ghpvc/?username=rishavanand&&style=flat-square)  
-  
-
-<br/>  
 
 
 <br />
