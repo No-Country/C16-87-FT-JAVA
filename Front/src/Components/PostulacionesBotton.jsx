@@ -1,6 +1,6 @@
 // PostulacionButton.js
 // eslint-disable-next-line no-unused-vars
-import React from 'react';
+import React from "react";
 
 const PostulacionButton = ({ onPostulate }) => {
   const handlePostulateClick = () => {
@@ -11,7 +11,7 @@ const PostulacionButton = ({ onPostulate }) => {
 
   return (
     <button
-      className="bg-green-500 text-white py-2 px-4 rounded mx-auto block"
+      className="bg-green-500 text-white py-2 px-4 rounded  block"
       onClick={handlePostulateClick}
     >
       Postularme
@@ -20,4 +20,3 @@ const PostulacionButton = ({ onPostulate }) => {
 };
 
 export default PostulacionButton;
-

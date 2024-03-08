@@ -19,7 +19,7 @@ const Navbar = () => {
   };
 
   return (
-<nav className="bg-green-500 p-4">
+    <nav className="bg-green-500 p-4">
       <div className="container mx-auto flex items-center justify-between">
         <div className="flex items-center space-x-6 ml-7 text-white">
           <Link to="/home" className="flex flex-col items-center group">
@@ -54,11 +54,16 @@ const Navbar = () => {
             </div>
             <span className="text-xs group-hover:text-white">Mi Red</span>
           </Link>
-          <Link to="/notificaciones" className="flex flex-col items-center group">
+          <Link
+            to="/notificaciones"
+            className="flex flex-col items-center group"
+          >
             <div className="flex items-center mb-1">
               <FaEnvelope size={24} />
             </div>
-            <span className="text-xs group-hover:text-white">Notificaciones</span>
+            <span className="text-xs group-hover:text-white">
+              Notificaciones
+            </span>
           </Link>
         </div>
       </div>
@@ -80,7 +85,8 @@ const Navbar = () => {
       {mostrarUnirmeAPartido && (
         <div className="flex justify-center">
           {/* Link a la ruta correspondiente */}
-          <Link to="/VistaPartido">
+
+          <Link to="/partidos">
             <button
               className="bg-blue-500 text-white px-2 py-2 rounded mt-2"
               onClick={toggleUnirmeAPartido}
@@ -95,4 +101,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-

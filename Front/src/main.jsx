@@ -15,7 +15,8 @@ import VistaPartido from "./components/VistaPartido.jsx";
 import Nosotros from "./components/Nosotros.jsx";
 import Home from "./components/Home.jsx";
 import FormEvent from "./components/Forms/FormEvent.jsx";
-import Notificaciones from './components/Notificaciones.jsx';
+import Notificaciones from "./components/Notificaciones.jsx";
+import Partidos from "./components/Partidos/Partidos.jsx";
 
 const router = createBrowserRouter([
   {
@@ -52,7 +53,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/notificaciones",
-    element: <Notificaciones />
+    element: <Notificaciones />,
+  },
+  {
+    path: "/partidos",
+    element: <Partidos />,
   },
 ]);
 

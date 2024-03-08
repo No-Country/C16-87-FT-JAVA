@@ -16,7 +16,7 @@ import { format } from "date-fns";
 const dataEvent = {
   eventId: 1,
   eventName: "Partido Futtbol 5, Picadito 99",
-  price: 2000.0,
+  price: 1000,
   startEvent: "2024-03-20T11:47:00",
   eventHours: 1,
   eventDescription: "Partido de 22hs a 23hs el 25 de marzo",
@@ -51,11 +51,11 @@ const formEvent = () => {
 
   const [eventCreate, setEventCreate] = useState({
     eventName: "",
-    price: 0,
+    price: 1000,
     startEvent: "",
     eventDescription: "",
-    playersQuantity: 0,
-    remainingPlayers: 0,
+    playersQuantity: 10,
+    remainingPlayers: 5,
     location: "",
     latitude: 0,
     longitude: 0,
@@ -179,11 +179,11 @@ const formEvent = () => {
         // Restablece el formulario y los errores
         setEventCreate({
           eventName: "",
-          price: 0,
+          price: 1000,
           startEvent: "",
           eventDescription: "",
-          playersQuantity: 0,
-          remainingPlayers: 0,
+          playersQuantity: 10,
+          remainingPlayers: 5,
           location: "",
           latitude: 0,
           longitude: 0,
