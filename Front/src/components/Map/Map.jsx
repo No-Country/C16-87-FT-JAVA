@@ -4,7 +4,7 @@ import "./map.css";
 import { useEffect, useState, useRef } from "react";
 
 export const Map = ({ selectedLatLng }) => {
-  console.log({ selectedLatLng });
+  // console.log({ selectedLatLng });
   const [centerMap, setCenterMap] = useState(null);
   const mapRef = useRef(null);
 
@@ -22,11 +22,14 @@ export const Map = ({ selectedLatLng }) => {
       map.fitBounds(bounds);
     }
 
-    if(selectedLatLng?.lat !== centerMap?.lat && selectedLatLng?.lng !== centerMap?.lng) {
-      setCenterMap(({
-          lat: selectedLatLng.lat,
-          lng: selectedLatLng.lng
-      }))
+    if (
+      selectedLatLng?.lat !== centerMap?.lat &&
+      selectedLatLng?.lng !== centerMap?.lng
+    ) {
+      setCenterMap({
+        lat: selectedLatLng.lat,
+        lng: selectedLatLng.lng,
+      });
     }
 
     // Actualizar el centro del mapa
