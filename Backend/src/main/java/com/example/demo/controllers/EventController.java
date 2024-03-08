@@ -278,4 +278,29 @@ public class EventController {
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Event not found");
     }
+
+
+    @GetMapping("{userId}")
+    public ResponseEntity<?> eventsByUserId(@PathVariable Long userId){
+        Optional<User> userOptional = userService.findById(userId);
+        if(userOptional.isPresent()){
+            List<EventDTO> eventDTOList = eventService.findEventsByUserId(userId)
+                    .stream()
+                    .map(event -> EventDTO.builder()
+                            .eventId(event.getEventId())
+                            .eventName(event.getEventName())
+                            .price(event.getPrice())
+                            .startEvent(event.getStartEvent())
+                            .eventHours(event.getEventHours())
+                            .eventDescription(event.getEventDescription())
+                            .playersQuantity(event.getPlayersQuantity())
+                            .location(event.getLocation())
+                            .available(event.isAvailable())
+                            .user(event.getUser())
+                            .build()
+                    ).toList();
+            return ResponseEntity.ok(eventDTOList);
+        }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Unauthorized operation. User mismatch.");
+    }
 }

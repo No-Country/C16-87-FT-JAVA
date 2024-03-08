@@ -11,13 +11,11 @@ import java.util.Optional;
 @Service
 public class EventServiceImpl implements IEventService {
 
-
     private final IEventDAO eventDAO;
 
     public EventServiceImpl(IEventDAO eventDAO) {
         this.eventDAO = eventDAO;
     }
-
 
     @Override
     public List<Event> findAll() {
@@ -43,6 +41,9 @@ public class EventServiceImpl implements IEventService {
     public List<Event> findEventByLocation(double latitude,double longitude,double distance) {
         return eventDAO.findEventByLocation(latitude,longitude,distance);
     }
-
+    @Override
+    public List<Event> findEventsByUserId(Long userId) {
+        return eventDAO.findEventsByUserId(userId);
+    }
 
 }

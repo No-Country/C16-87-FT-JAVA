@@ -34,4 +34,9 @@ public class EventDAOImp implements IEventDAO {
     public List<Event> findEventByLocation(double latitude,double longitude,double distance) {
         return eventRepository.findEventByLocation( latitude, longitude, distance);
     }
+
+    @Override
+    public List<Event> findEventsByUserId(Long userId) {
+        return eventRepository.findEventsByUserId(userId);
+    }
 }
