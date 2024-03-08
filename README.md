@@ -17,6 +17,17 @@ Regístrate ahora en [Fútbol Ya](https://tufutbolya.com) y comienza a organizar
 
 _Inserta capturas de pantalla de la aplicación aquí si es necesario._
 
+## Equipo de Desarrollo
+
+- [Nicolas Fontanini](enlace_github_1)  
+  ![Foto del Desarrollador 1](enlace_foto_1)
+  [LinkedIn del Desarrollador 1](https://github.com/Nicofontanini)
+
+- [Nombre del Desarrollador 2](enlace_github_2)  
+  ![Foto del Desarrollador 2](enlace_foto_2)
+  [LinkedIn del Desarrollador 2](enlace_linkedin_2)
+
+
 ## Contribuir
 
 Si deseas contribuir al desarrollo de Fútbol Ya, sigue estos pasos:
