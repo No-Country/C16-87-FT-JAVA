@@ -1,10 +1,8 @@
-import { CREATE_EVENT, POSTULATE, ADD_NOTIFICATION } from "./actions";
+import { CREATE_EVENT, UPDATE_EVENT, ADD_NOTIFICATION } from "./actions";
 
 const initialState = {
   events: [],
   eventsCopy: [],
-  selectedPartido: null,
-  notifications: [],
 };
 
 const reducer = (state = initialState, { type, payload }) => {
@@ -15,11 +13,18 @@ const reducer = (state = initialState, { type, payload }) => {
         events: [...state.events, payload],
       };
 
-    case POSTULATE:
-      return {
-        ...state,
-        selectedPartido: payload,
-      };
+    case UPDATE_EVENT:
+        const updatedEvents = state.events.map(event => {
+        if (event.id === payload.eventId) {
+            return payload.event;
+        }
+            return event;
+        });
+    
+        return {
+            ...state,
+            events: updatedEvents,
+        };
 
     case ADD_NOTIFICATION:
       return {
