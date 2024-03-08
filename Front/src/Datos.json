@@ -1,6 +1,60 @@
-
-{
-    "image":"../src/imgNosotros/NicolasFontanini.jpg",
+[
+  {
+    "image": "../src/imgNosotros/Agustin Loraca.jpg",
+    "nombre": "Agustin",
+    "apellido": "Lorca",
+    "formacion": "ITBA Universidad",
+    "rol": "Back End Developer",
+    "github": "https://github.com/agustinlorca",
+    "linkedin": "https://www.linkedin.com/in/agustin-lorca/"
+  },
+  {
+    "image": "../src/imgNosotros/Cesar Gonzales.jpg",
+    "nombre": "Cesar Javier",
+    "apellido": "Gonzalez",
+    "formacion": "ORT Argentina",
+    "rol": "Back End Developer",
+    "github": "https://github.com/cjgonzalezlaffont",
+    "linkedin": "https://www.linkedin.com/in/cjgl/"
+  },
+  {
+    "image": "../src/imgNosotros/Fabrizio Alderete.jpg",
+    "nombre": "Frabrizio",
+    "apellido": "Alderete",
+    "formacion": "Bootcamp SoyHenry",
+    "rol": "Front End Developer",
+    "github": "https://github.com/fbrz1",
+    "linkedin": "https://www.linkedin.com/in/fabrizio-alderete/"
+  },
+  {
+    "image": "../src/imgNosotros/FrancoHeredia.jpg",
+    "nombre": "Franco",
+    "apellido": "Heredia",
+    "formacion": "Bootcamp SoyHenry",
+    "rol": "Front End Developer",
+    "github": "https://github.com/Franheredia14",
+    "linkedin": "https://www.linkedin.com/in/franco-heredia-454b9a277/"
+  },
+  {
+    "image": "../src/imgNosotros/Juan Diego Tabares.jpg",
+    "nombre": "Juan Diego",
+    "apellido": "Tabares",
+    "formacion": "Ing. Multimedia - U. Autonoma de Occidente",
+    "rol": "Back End-Cloud Engineer",
+    "github": "https://github.com/JuanDied",
+    "linkedin": "https://www.linkedin.com/in/juan-diego-tabares-956aa31a4/"
+  },
+  {
+    "image": "../src/imgNosotros/Juan Cruz Liberati.jpg",
+    "nombre": "Juan Cruz",
+    "apellido": "Barrera Liberati",
+    "formacion": "Universidad Nacional Del COMAHUE",
+    "rol": "Back End Developer",
+    "github": "https://github.com/juanlti",
+    "linkedin": "https://www.linkedin.com/in/juan-cruz-barrera-liberati-aaa642242/"
+  },
+  {
+    "image": "../src/imgNosotros/NicolasFontanini.jpg",
     "nombre": "Nicolas",
     "apellido": "Fontanini",
     "formacion": "UTN FullStack Developer",
@@ -8,4 +62,4 @@
     "github": "https://github.com/Nicofontanini",
     "linkedin": "https://www.linkedin.com/in/nicolasfontanini"
   }
-  
+]
