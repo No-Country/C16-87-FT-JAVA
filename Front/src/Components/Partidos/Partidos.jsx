@@ -131,7 +131,13 @@ const Partidos = ({ onSelect }) => {
         );
         if (response.ok) {
           const data = await response.json();
-          setPartidos(data);
+
+          const partidosOrdenados = data.sort((a, b) => {
+            const distanciaA = distanciaDesdeUsuario(a);
+            const distanciaB = distanciaDesdeUsuario(b);
+            return distanciaA - distanciaB;
+          });
+          setPartidos(partidosOrdenados);
         } else {
           console.error("Error al obtener los datos");
         }
@@ -141,7 +147,7 @@ const Partidos = ({ onSelect }) => {
     };
 
     fetchData();
-  }, []);
+  }, [ipInfo]);
 
   const distanciaDesdeUsuario = (partido) => {
     if (ipInfo) {
