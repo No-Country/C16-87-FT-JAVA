@@ -13,5 +13,5 @@ public interface IEventDAO {
     void deleteById(Long eventId);
     List<Event> findEventByLocation(double latitude,double longitude,double distance);
 
-
+    List<Event> findEventsByUserId(Long userId);
 }

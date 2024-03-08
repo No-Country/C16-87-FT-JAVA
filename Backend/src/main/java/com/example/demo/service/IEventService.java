@@ -12,6 +12,5 @@ public interface IEventService {
     void save(Event event);
     void deleteById(Long eventId);
     List<Event> findEventByLocation(double latitude,double longitud,double distance);
-
-
+    List<Event> findEventsByUserId(Long userId);
 }
