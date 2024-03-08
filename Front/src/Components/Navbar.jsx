@@ -52,7 +52,7 @@ const Navbar = () => {
             <div className="flex items-center mb-1">
               <FaUser size={24} />
             </div>
-            <span className="text-xs group-hover:text-white">Mi Red</span>
+            <span className="text-xs group-hover:text-white">Red</span>
           </Link>
           <Link
             to="/notificaciones"
@@ -69,7 +69,7 @@ const Navbar = () => {
       </div>
       {/* Contenedor para el botón "Crear Nuevo Partido" */}
       {mostrarCrearPartido && (
-        <div className="flex justify-center">
+        <div className="flex  justify-center">
           {/* Link a la ruta correspondiente */}
           <Link to="/crear-nuevo-partido">
             <button
@@ -77,6 +77,14 @@ const Navbar = () => {
               onClick={toggleCrearPartido}
             >
               Crear Nuevo Partido
+            </button>
+          </Link>
+          <Link to="/crear-nuevo-partido">
+            <button
+              className="bg-blue-500 text-white px-3 ml-5 py-2 rounded mt-2"
+              onClick={toggleCrearPartido}
+            >
+              Mis partidos
             </button>
           </Link>
         </div>

@@ -1,80 +1,32 @@
 import React, { useState, useEffect } from "react";
-import { Card } from "flowbite-react";
+import { Card, Modal, Select } from "flowbite-react";
 import PostulacionButton from "../PostulacionesBotton";
 import NavBar from "../Navbar";
 import axios from "axios";
+import {
+  fetchData,
+  handleMouseEnter,
+  handleMouseLeave,
+  handleClick,
+  handleToggleExpand,
+  obtenerDiaSemana,
+  obtenerHoraArgentina,
+  distanciaDesdeUsuario,
+  distanciaEntreCoordenadas,
+} from "./partidoFunciones.js";
 
 const Partidos = ({ onSelect }) => {
   const [partidos, setPartidos] = useState([]);
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [expandedIndex, setExpandedIndex] = useState(null);
+  const [partide, selectedPartide] = useState("");
+  const [ipInfo, setIpInfo] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedDistance, setSelectedDistance] = useState(10); // Valor predeterminado
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(
-          "http://64.23.159.97:8080/api/event/findAll"
-        );
-        if (response.ok) {
-          const data = await response.json();
-          setPartidos(data);
-        } else {
-          console.error("Error al obtener los datos");
-        }
-      } catch (error) {
-        console.error("Error en la solicitud:", error);
-      }
-    };
-
-    fetchData();
+    fetchData().then((data) => setPartidos(data));
   }, []);
-
-  const handleMouseEnter = (index) => {
-    setHoveredIndex(index);
-  };
-
-  const handleMouseLeave = () => {
-    setHoveredIndex(null);
-  };
-
-  const handleClick = (index) => {
-    if (onSelect) {
-      onSelect(partidos[index]);
-    }
-  };
-
-  const handleToggleExpand = (index) => {
-    setExpandedIndex(expandedIndex === index ? null : index);
-  };
-
-  const diasSemana = [
-    "domingo",
-    "lunes",
-    "martes",
-    "miércoles",
-    "jueves",
-    "viernes",
-    "sábado",
-  ];
-
-  function obtenerDiaSemana(fechaString) {
-    const fecha = new Date(fechaString);
-    const diaSemana = diasSemana[fecha.getUTCDay()];
-    return diaSemana.charAt(0).toUpperCase() + diaSemana.slice(1); // Capitalizar la primera letra
-  }
-
-  function obtenerHoraArgentina(fechaString) {
-    const fecha = new Date(fechaString);
-    const opciones = {
-      timeZone: "America/Argentina/Buenos_Aires",
-      hour: "numeric",
-      minute: "numeric",
-      hour12: true,
-    };
-    return fecha.toLocaleTimeString("es-AR", opciones);
-  }
-
-  const [ipInfo, setIpInfo] = useState(null);
 
   const toRadians = (grados) => {
     return grados * (Math.PI / 180);
@@ -106,24 +58,31 @@ const Partidos = ({ onSelect }) => {
     getIPInfo();
   }, []);
 
-  function obtenerDiaSemana(fechaString) {
-    const fecha = new Date(fechaString);
-    const diaSemana = diasSemana[fecha.getUTCDay()];
-    return diaSemana.charAt(0).toUpperCase() + diaSemana.slice(1); // Capitalizar la primera letra
-  }
+  const handlePostulate = () => {
+    if (selectedPartide) {
+      const postulationNotification = `Te has postulado para el partido: ${selectedPartide.eventName}`;
+      addNotification(postulationNotification);
+    } else {
+      console.error("No hay un partido seleccionado para postularte.");
+    }
+  };
 
-  function obtenerHoraArgentina(fechaString) {
-    const fecha = new Date(fechaString);
-    const opciones = {
-      timeZone: "America/Argentina/Buenos_Aires",
-      hour: "numeric",
-      minute: "numeric",
-      hour12: true,
-    };
-    return fecha.toLocaleTimeString("es-AR", opciones);
-  }
+  const diasSemana = [
+    "domingo",
+    "lunes",
+    "martes",
+    "miércoles",
+    "jueves",
+    "viernes",
+    "sábado",
+  ];
 
   useEffect(() => {
+    // Obtener valores únicos de remainingPlayers
+    const remainingPlayersValues = Array.from(
+      new Set(partidos.map((partido) => partido.remainingPlayers))
+    );
+
     const fetchData = async () => {
       try {
         const response = await fetch(
@@ -147,8 +106,7 @@ const Partidos = ({ onSelect }) => {
     };
 
     fetchData();
-  }, [ipInfo]);
-
+  }, [ipInfo, partidos, partidos.map((partido) => partido.remainingPlayers)]);
   const distanciaDesdeUsuario = (partido) => {
     if (ipInfo) {
       const distancia = calcularDistancia(
@@ -174,19 +132,91 @@ const Partidos = ({ onSelect }) => {
     return null;
   };
 
+  const handleFilterModal = () => {
+    setShowModal(true);
+  };
+
+  const handleDistanceChange = (value) => {
+    setSelectedDistance(value);
+  };
+
+  const handleFilterClose = () => {
+    setShowModal(false);
+    // Aquí puedes aplicar la lógica para filtrar los partidos con la nueva distancia seleccionada
+  };
+
+  const postularUser = async (eId) => {
+    try {
+      const IdUser = sessionStorage.getItem("userId");
+      const token = sessionStorage.getItem("jwtToken");
+
+      const response = await axios.post(
+        `http://64.23.159.97:8080/api/event/${eId}/join/${IdUser}`,null,{
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": token,
+        },
+      }
+      );
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        console.error("Respuesta del servidor:", error.response.data);
+      } else {
+        console.error("Error sin respuesta del servidor:", error.message);
+      }
+    }
+  };
+  const handlePostularme = async (eID) => {
+    postularUser(eID);
+  };
+
   return (
     <div>
       <NavBar />
+      <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
+        <div className="p-4">
+          <h2 className="text-lg font-bold mb-4">Seleccionar distancia</h2>
+          <Select
+            label="Distancia (en km)"
+            value={selectedDistance}
+            onChange={(e) => handleDistanceChange(e.target.value)}
+          >
+            {/* Aquí puedes agregar opciones para la distancia */}
+            <option value={5}>5 km</option>
+            <option value={10}>10 km</option>
+            <option value={15}>15 km</option>
+            {/* ... otras opciones */}
+          </Select>
+          <button
+            className="bg-blue-500 text-white py-2 px-4 rounded mt-4"
+            onClick={handleFilterClose}
+          >
+            Aplicar Filtro
+          </button>
+        </div>
+      </Modal>
+      <div className="flex bg-green-600  justify-between">
+        <h2 className="text-white font-medium justify-center flex items-center">
+          Filtrado por ubicación:
+        </h2>
 
+        <button
+          className="inline-flex m-2 cursor-pointer bg-green-600 items-center gap-1 rounded border border-white  text-white font-medium text-md"
+          onClick={handleFilterModal}
+        >
+          <span className="m-1">Cambiar</span>
+        </button>
+      </div>
       <div>
         {partidos.map((partido, index) => (
           <Card
-            key={partido.userId}
-            className={`bg-white p-4 rounded shadow-md flex flex-col md:flex-row justify-between ${
-              hoveredIndex === index ? "border-2 border-green-500" : ""
+            key={partido.userId || index}
+            className={`bg-white p-4 rounded shadow-xl flex flex-col md:flex-row justify-between ${
+              hoveredIndex === index ? "border-5 border-green-800" : ""
             }`}
-            onMouseEnter={() => handleMouseEnter(index)}
-            onMouseLeave={handleMouseLeave}
+            onMouseEnter={() => handleMouseEnter(index, setHoveredIndex)}
+            onMouseLeave={() => handleMouseLeave(setHoveredIndex)}
           >
             <div className="flex flex-row justify-between w-full">
               <div className="md:mr-4">
@@ -223,19 +253,27 @@ const Partidos = ({ onSelect }) => {
               <div className="bg-green-500 justify-center items-center flex text-white p-2 shadow-md mb-2 md:mr-4">
                 📍{" "}
                 {Math.round(
-                  distanciaEntreCoordenadas(
-                    partido.latitude,
-                    partido.longitude
-                  ).toFixed(2)
-                )}{" "}
+                  distanciaEntreCoordenadas(partido.latitude, partido.longitude)
+                )}
                 km
               </div>
             </div>
 
             <div className="flex items-center justify-between mt-4 md:mt-0">
-              <PostulacionButton />
               <button
-                onClick={() => handleToggleExpand(index)}
+                onClick={() => {
+                  const eId = partido.eventId;
+                  console.log("eID", eId);
+                  handlePostularme(eId); // Pasar directamente eId en lugar de { eId }
+                }}
+                className="bg-green-500 text-white py-2 px-4 rounded  block"
+              >
+                Postularme
+              </button>
+              <button
+                onClick={() =>
+                  handleToggleExpand(index, setExpandedIndex, expandedIndex)
+                }
                 className="bg-slate-500 text-white py-2 px-4 rounded block"
               >
                 {expandedIndex === index ? "Ocultar ⭡" : "Dirección ⭣"}

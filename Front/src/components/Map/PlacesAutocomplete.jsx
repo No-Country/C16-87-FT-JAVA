@@ -50,7 +50,7 @@ export const PlacesAutocomplete = ({ onPlaceSelect }) => {
 
   const handlePlaceSelect = async (updateQuery) => {
     const addressObject = await autoComplete.getPlace();
-    console.log("Enlace de Google Maps:", googleMapsLink);
+    // console.log("Enlace de Google Maps:", googleMapsLink);
     console.log("soy objt", addressObject);
 
     const query = addressObject.formatted_address;
