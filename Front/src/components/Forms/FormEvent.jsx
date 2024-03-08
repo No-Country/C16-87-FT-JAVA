@@ -12,6 +12,13 @@ import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { format } from "date-fns";
+import {
+  IoLocationOutline,
+  IoTodayOutline,
+  IoCashOutline,
+  IoPersonOutline,
+  IoPersonAddOutline,
+} from "react-icons/io5";
 
 const dataEvent = {
   eventId: 1,
@@ -51,15 +58,15 @@ const formEvent = () => {
 
   const [eventCreate, setEventCreate] = useState({
     eventName: "",
-    price: 0,
+    price: null,
     startEvent: "",
     eventDescription: "",
-    playersQuantity: 0,
-    remainingPlayers: 0,
+    playersQuantity: null,
+    remainingPlayers: null,
     location: "",
-    latitude: 0,
-    longitude: 0,
-    eventHours: 1,
+    latitude: null,
+    longitude: null,
+    eventHours: null,
     available: true,
     user: {
       userId: "",
@@ -240,20 +247,19 @@ const formEvent = () => {
 
   return (
     <>
-      {console.log("soy session", sessionStorage.getItem("jwtToken"))}
       <Navbar />
-      <section class="bg-white dark:bg-gray-900">
-        <div class="py-8 px-4 mx-auto max-w-2xl lg:py-16 bg-green-600">
-          <h2 class="flex justify-center mb-4 text-[25px] font-bold text-gray-900">
-            Crear nuevo evento
+      <section className="bg-white dark:bg-gray-900">
+        <div className="py-4 px-4 mx-auto max-w-2xl lg:py-16 bg-gradient-to-b from-green-600 to-green-800">
+          <h2 className="flex justify-center mb-4 text-[25px] font-bold text-white">
+            CREAR PARTIDO
           </h2>
           <form action="#" onSubmit={handleCreateEvent}>
-            <div class="sm:col-span-2">
+            <div className="sm:col-span-2">
               <label
                 for="eventName"
-                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                className="block mb-2 text-sm font-medium text-white dark:text-white"
               >
-                Nombre del evento
+                NOMBRE
               </label>
               <input
                 type="text"
@@ -261,53 +267,135 @@ const formEvent = () => {
                 value={eventCreate.eventName}
                 onChange={handleChange}
                 id="eventName"
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 mb-2"
-                placeholder="Nombre evento"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 mb-2"
+                placeholder="Nombre"
                 required=""
               />
             </div>
-            <div className="grid grid-cols-2 gap-4 mt-3">
-              <div class="sm-col-span-2">
-                <label
-                  for="playersQuantity"
-                  class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
-                  Total de jugadores
-                </label>
-                <input
-                  type="number"
-                  name="playersQuantity"
-                  id="playersQuantity"
-                  value={parseInt(eventCreate.playersQuantity)}
+            <div className="sm:col-span-2">
+              <label
+                for="location"
+                className="block mb-2 text-sm font-medium text-white"
+              >
+                DIRECCIÓN
+              </label>
+              <div className="relative">
+                <PlacesAutocomplete
+                  onPlaceSelect={handlePlaceSelect}
+                  name="location"
+                  value={eventCreate.location}
                   onChange={handleChange}
-                  class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-800 block w-20 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                  placeholder="10, 14, 22..."
-                  required=""
                 />
+                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                  <IoLocationOutline className="h-5 w-5 text-gray-400" />
+                </div>
               </div>
-              <div class="sm-col-span-2">
-                <label
-                  for="playersQuantity"
-                  class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
-                  Jugadores que faltan
-                </label>
-                <input
-                  type="number"
-                  name="remainingPlayers"
-                  id="remainingPlayers"
-                  value={eventCreate.remainingPlayers}
-                  onChange={handleChange}
-                  class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-800 block w-20 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                  placeholder="1, 2, 3..."
-                  required=""
-                />
+              <div className="sm:col-span-2 grid grid-cols-2 gap-4">
+                <div className="col-span-1">
+                  <label
+                    for="startEvent"
+                    className="block mb-2 text-sm font-medium text-white"
+                  >
+                    FECHA Y HORA
+                  </label>
+                  <div className="relative flex w-full">
+                    <DatePicker
+                      name="startEvent"
+                      selected={selectedDate}
+                      onChange={handleDate}
+                      dateFormat={"dd/MM/yyyy ; HH:mm"}
+                      placeholderText="Fecha y hora"
+                      showTimeSelect
+                      timeIntervals={30}
+                      timeFormat="HH:mm"
+                      locale="es"
+                      className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 mb-2"
+                    />
+                    <div className="absolute inset-y-2 right-0 flex items-center pr-1 pointer-events-none">
+                      <IoTodayOutline className="h-5 w-5 text-gray-400" />
+                    </div>
+                  </div>
+                </div>
+                <div className="col-span-1">
+                  <label
+                    for="price"
+                    className="block mb-2 text-sm font-medium text-white"
+                  >
+                    PRECIO POR PERSONA
+                  </label>
+                  <div className="relative flex justify-start w-full">
+                    <input
+                      type="number"
+                      name="price"
+                      id="price"
+                      value={eventCreate.price}
+                      onChange={handleChange}
+                      className="w-full bg-gray-50 border border-gray-300 text-white text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 mb-2"
+                      placeholder="Precio"
+                      required=""
+                    />
+                    <div className="absolute inset-y-0 right-0 bottom-2 flex items-center pr-3 pointer-events-none">
+                      <IoCashOutline className="h-5 w-5 text-gray-400" />
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-            <div class="sm-col-span-2 w-full">
+            <div className="grid grid-cols-2 gap-4 mt-3">
+              <div className="sm-col-span-2">
+                <label
+                  for="playersQuantity"
+                  className="block mb-2 text-sm font-medium text-white"
+                >
+                  TOTAL DE JUGADORES
+                </label>
+                <div className="relative flex justify-start w-full">
+                  <input
+                    type="number"
+                    name="playersQuantity"
+                    id="playersQuantity"
+                    value={parseInt(eventCreate.playersQuantity)}
+                    onChange={handleChange}
+                    className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-800 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                    placeholder="Total de jugadores"
+                    required=""
+                  />
+                  {/* Icono al final del input */}
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                    <IoPersonOutline className="h-5 w-5 text-gray-400" />
+                  </div>
+                </div>
+              </div>
+
+              <div className="sm-col-span-2">
+                <label
+                  for="playersQuantity"
+                  className="block mb-2 text-sm font-medium text-white"
+                >
+                  JUGADORES QUE FALTAN
+                </label>
+                <div className="relative flex justify-start w-full">
+                  <input
+                    type="number"
+                    name="remainingPlayers"
+                    id="remainingPlayers"
+                    value={eventCreate.remainingPlayers}
+                    onChange={handleChange}
+                    className="w-full bg-gray-50 border border-gray-300 text-white text-sm rounded-lg focus:ring-primary-600 focus:border-primary-800 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                    placeholder="Faltantes"
+                    required=""
+                  />
+                  {/* Icono al final del input */}
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                    <IoPersonAddOutline className="h-5 w-5 text-gray-400" />
+                  </div>
+                </div>
+              </div>
+            </div>
+            {/* <div className="sm-col-span-2 w-full">
               <label
                 for="price"
-                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
               >
                 Precio por persona
               </label>
@@ -317,73 +405,36 @@ const formEvent = () => {
                 id="price"
                 value={eventCreate.price}
                 onChange={handleChange}
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 mb-2"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 mb-2"
                 placeholder="$2500"
                 required=""
               />
-            </div>
-            <div class="mt-5 sm:col-span-2">
-              <label
-                for="startEvent"
-                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white flex justify-center"
-              >
-                Hora y fecha del evento
-              </label>
-              <div class="flex justify-center">
-                <DatePicker
-                  name="startEvent"
-                  selected={selectedDate}
-                  onChange={handleDate}
-                  dateFormat={"dd/MM/yyyy ; HH:mm"}
-                  showTimeSelect
-                  timeIntervals={30}
-                  timeFormat="HH:mm"
-                  locale="es"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 z-10"
-                />
-              </div>
-            </div>
-            <div class="grid gap-4 sm:grid-cols-2 sm:gap-6 mt-3">
-              <div class="sm:col-span-2">
+            </div> */}
+            <div className="grid gap-4 sm:grid-cols-2 sm:gap-6 mt-3">
+              <div className="sm:col-span-2">
                 <label
                   for="eventDescription"
-                  class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  className="block mb-2 text-sm font-medium text-white "
                 >
-                  Description
+                  DESCRIPCIÓN
                 </label>
                 <textarea
                   id="eventDescription"
                   name="eventDescription"
                   value={eventCreate.eventDescription}
                   onChange={handleChange}
-                  rows="4"
-                  class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                  rows="2"
+                  className="block p-2.5 w-full text-sm text-white bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                   placeholder="Descripcion adicional del evento"
                 ></textarea>
               </div>
-              <div class="sm:col-span-2">
-                <label
-                  for="location"
-                  class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
-                  Direccion del evento
-                </label>
-                <div>
-                  <PlacesAutocomplete
-                    onPlaceSelect={handlePlaceSelect}
-                    name="location"
-                    value={eventCreate.location}
-                    onChange={handleChange}
-                  />
-                </div>
-              </div>
             </div>
-            <div class="flex justify-center">
+            <div className="flex justify-center">
               <button
                 type="submit"
-                class="inline-flex items-center justify-center w-80 px-5 py-2.5 mt-4 sm:mt-6 text-sm font-medium text-center text-white rounded-lg focus:ring-4 focus:ring-green-200 dark:focus:ring-green-900 hover:bg-green-800"
+                className="mt-5 mb-5 cursor-pointer inline-flex items-center gap-1 rounded border border-slate-300 bg-gradient-to-b from-slate-50 to-slate-200 px-4 py-2 font-semibold hover:opacity-90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-300 focus-visible:ring-offset-2 active:opacity-100"
               >
-                Crear Evento
+                CREAR PARTIDO
               </button>
             </div>
           </form>
